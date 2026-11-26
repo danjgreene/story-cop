@@ -45,7 +45,7 @@
 
 ## Porting plan
 1. **Repo setup (done).** The prototype is committed unchanged as `prototype/index.html`, with a README, CLAUDE.md and these docs.
-2. **Scaffold** Vite + TypeScript and move the code into the modules above **without changing behavior**. Add golden-file tests for the exporters first; they're the easiest to break.
+2. **Scaffold (done, Nov 25, 2026).** Vite + TypeScript, the code moved into the modules above **without changing behavior**. Golden-file tests protect the exporters, and a parity test drives the prototype and the new app side by side, checking every screen, prompt and saved file. The UI stays plain DOM (`h()`), as in the prototype; a framework can come later if clearly worth it. Inline task prompts are now functions in `src/ai/prompts.ts` that return the same text.
 3. **Claude client and Settings screen:** paste an API key, test the connection, and choose models per tier. Wire streaming into the progress meter. Handle errors the same way `run()` does now (rate limits, bad key, network).
 4. **Storage:** move to IndexedDB and import the artifact's JSON backups (keep the `{app:'storycop', v:1, stories}` format), so Dan's existing stories carry over.
 5. **Tauri desktop build:** keychain storage for the API key, `.storycop` project files with Open, Save and Recent, native save dialogs for exports, and speech.
