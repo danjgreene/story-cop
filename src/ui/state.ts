@@ -34,6 +34,11 @@ export interface UIState {
   butOpen: boolean;
   pageM: number;
   stick?: boolean;
+  // Settings screen
+  settingsFrom?: string;
+  sDraft?: any;
+  sTest?: { busy?: boolean; ok: boolean; message: string } | null;
+  showKey?: boolean;
 }
 
 export const UI: UIState = { view: cur() ? 'cop' : 'home', zoom: 'spine', prog: null, progText: '', showHelp: false, exportOpen: false, frameOpen: false, fDraft: null, kFrame: null, lens: '', impTitle: '', impText: '', note: '', tab: 'open', busy: '', err: '', draft: '', pTitle: '', pIdea: '', kick: null, kAns: {}, kOther: {}, activeQ: null, opts: {}, showPick: false, other: '', roll: null, steer: '', butOpen: false, pageM: 1 };

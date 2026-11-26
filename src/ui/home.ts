@@ -10,13 +10,26 @@ import { h } from './dom';
 import { render } from './refresh';
 import { major, progCard } from './progress';
 import { micBtn, status } from './common';
+import { openSettings } from './settings';
+import { inClaude } from '../platform/claude';
+import { hasKey } from '../platform/settings';
 
 let confirmDel: string | null = null;
+
+// Outside Claude: a prompt to add an API key, or a quiet link to Settings once there is one.
+function keyCard() {
+  if (hasKey()) return h('div', { class: 'row small muted', style: 'gap:6px' }, 'Using your Anthropic API key.', h('button', { type: 'button', class: 'link small', onclick: openSettings }, 'Settings'));
+  return h('div', { class: 'card', style: 'display:flex;flex-direction:column;gap:8px;border-color:#4A3A1E' },
+    h('div', { class: 'label', style: 'color:#E8A33D' }, 'First: connect to Claude'),
+    h('div', { class: 'small' }, 'The story editor needs your own Anthropic API key. It takes a minute to set up, and it\'s separate from a Claude.ai subscription.'),
+    h('div', null, h('button', { type: 'button', class: 'btn amber', onclick: openSettings }, 'Add your API key')));
+}
 
 export function home() {
   const stories = Object.values(DB.stories);
   return h('div', { class: 'home' },
     h('div', null, h('div', { class: 'title', style: 'font-size:22px' }, 'Story COP'), h('div', { class: 'muted' }, 'From a one-line idea to pages, with a story editor beside you.')),
+    inClaude() ? null : keyCard(),
     h('div', { class: 'card', style: 'display:flex;flex-direction:column;gap:10px' },
       h('div', { class: 'label' }, 'New idea'),
       h('label', { for: 'pt', class: 'small muted' }, 'Working title'),

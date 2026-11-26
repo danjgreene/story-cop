@@ -13,6 +13,8 @@ Concept-to-screenplay development tool for one writer (Dan Greene). Its eventual
 - `npm test`: Vitest. Run after every change. `tests/parity.test.ts` runs the prototype and the new app side by side and must stay green until a phase deliberately changes behavior (then update the test on purpose and say so).
 - `npm run build`: type check + build to `dist/`
 - `npm run goldens`: remake `tests/golden/` from the prototype. Only on purpose.
+- Tests never call the real Anthropic API: `tests/helpers/fakeAnthropic.ts` stands in for it. Running anything against the real API spends the user's money, so ask first.
+- The installed SDK sends the API key as `Authorization: Bearer`, not `x-api-key`.
 
 ## Environment (Windows)
 - A separate project from Space School; nothing is shared between them.

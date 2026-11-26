@@ -9,6 +9,8 @@ import { render } from './refresh';
 import { editorPane } from './editorPane';
 import { centerPane } from './centerPane';
 import { canonPane } from './canonPane';
+import { openSettings } from './settings';
+import { inClaude } from '../platform/claude';
 
 export function cop() {
   const st = cur(); const openIds = st.open.map((o) => o.id);
@@ -19,6 +21,7 @@ export function cop() {
       h('span', { style: 'flex:1' }),
       h('span', { class: 'muted small' }, 'v' + (st.version || 1)),
       h('button', { type: 'button', class: 'btn', onclick: () => { st.seenGuide = false; saveDB(); render(); } }, 'How this works'),
+      inClaude() ? null : h('button', { type: 'button', class: 'btn', onclick: openSettings }, 'Settings'),
       h('button', { type: 'button', class: 'btn', onclick: () => { UI.exportOpen = !UI.exportOpen; UI.note = ''; UI.err = ''; render(); const c = document.querySelector('.center'); if (c) c.scrollTop = 0; } }, 'Export & save'),
       h('button', { type: 'button', class: 'btn', disabled: !(st.history && st.history.length) || !!UI.busy, onclick: undo }, 'Undo'),
       h('button', { type: 'button', class: 'btn' + (st.stale ? ' amber' : ''), disabled: !!UI.busy, onclick: zoomOut }, st.stale ? 'Zoom out (canon changed)' : 'Zoom out'),

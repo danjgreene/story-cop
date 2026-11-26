@@ -7,7 +7,9 @@ import { frameText } from '../story/frame';
 import { UI } from '../ui/state';
 import { render } from '../ui/refresh';
 import { updateProg } from '../ui/progress';
-import { use } from '../platform/claude';
+import { use, inClaude } from '../platform/claude';
+import { loadSettings } from '../platform/settings';
+import { makeApiSampler } from './anthropic';
 import { EDITOR } from './prompts';
 
 export function compact(st: Story) {
@@ -28,10 +30,18 @@ export function fullPrompt(task: string, schema: string, raw: boolean, st: Story
     (raw ? '' : '\n\nReturn ONLY one JSON object, with no code fences and no commentary, in this shape:\n' + schema);
 }
 
+// Which way to reach Claude: the writer's own API key if they've added one,
+// otherwise the artifact's 'sample' capability when running inside Claude.
 let sampleP: Promise<any> | null = null;
-export async function ask(task: string, schema: string, tier?: string, raw?: boolean): Promise<any> {
+async function sampler() {
+  if (loadSettings().apiKey) return makeApiSampler();
+  if (!inClaude()) throw { code: 'no_key' };
   if (!sampleP) sampleP = use('sample');
   const s = await sampleP; if (!s) throw { code: 'unavailable' };
+  return s;
+}
+export async function ask(task: string, schema: string, tier?: string, raw?: boolean): Promise<any> {
+  const s = await sampler();
   const st = cur();
   const prompt = fullPrompt(task, schema, raw, st);
   const r = await s(prompt, { modelTier: tier || 'default', cache: false, onText: ({ text }) => { UI.progText = text || ''; updateProg(); } });
@@ -43,7 +53,7 @@ export async function run(label: string, fn: () => Promise<void>, prog?: any) {
   if (UI.busy) return; UI.busy = label; UI.err = ''; UI.prog = { ...(prog || { minor: true }), start: Date.now() }; UI.progText = ''; render();
   progTimer = setInterval(updateProg, 1000);
   try { await fn(); } catch (e) {
-    UI.err = e && e.code === 'not_granted' ? 'Claude access wasn\'t granted for this page.' : e && e.code === 'rate_limited' ? 'Rate limited. Give it a minute, then try again.' : e && e.code === 'unavailable' ? 'Claude isn\'t available in this view. Open this page inside Claude to use the AI.' : (e && e.message) || 'Something went wrong. Try again.';
+    UI.err = e && e.code === 'no_key' ? 'Add your Anthropic API key in Settings to use the AI.' : e && e.code === 'not_granted' ? 'Claude access wasn\'t granted for this page.' : e && e.code === 'rate_limited' ? 'Rate limited. Give it a minute, then try again.' : e && e.code === 'unavailable' ? 'Claude isn\'t available in this view. Open this page inside Claude to use the AI.' : (e && e.message) || 'Something went wrong. Try again.';
   }
   clearInterval(progTimer); UI.busy = ''; UI.prog = null; render();
 }
