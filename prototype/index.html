@@ -1,0 +1,888 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Story COP</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Courier+Prime&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:#131313;color:#ECE6DA;font:14px/1.5 Inter,system-ui,sans-serif}
+button{font:inherit;cursor:pointer}
+button:disabled{opacity:.5;cursor:default}
+select{font:inherit;color:#ECE6DA;background:#131313;border:1px solid #3A3A3A;border-radius:8px;padding:9px 10px;width:100%;min-height:40px}
+input,textarea{font:inherit;color:#ECE6DA;background:#131313;border:1px solid #3A3A3A;border-radius:8px;padding:10px 12px;width:100%}
+textarea{resize:vertical;min-height:110px}
+input:focus,textarea:focus,button:focus-visible{outline:2px solid #E8A33D;outline-offset:1px}
+.app{display:flex;flex-direction:column;height:100vh}
+header{display:flex;flex-wrap:wrap;align-items:center;gap:10px;padding:12px 20px;border-bottom:1px solid #2A2A2A}
+.title{font-weight:700;font-size:17px;letter-spacing:.08em;text-transform:uppercase}
+.body{display:flex;flex-wrap:wrap;flex:1;min-height:0}
+.pane{overflow:auto;padding:18px;display:flex;flex-direction:column;gap:12px}
+.left{flex:1 1 320px;max-width:440px;border-right:1px solid #2A2A2A}
+.center{flex:999 1 520px;min-width:0}
+.right{flex:1 1 280px;max-width:370px;border-left:1px solid #2A2A2A}
+@media(max-width:900px){.app{height:auto}.pane{overflow:visible}.left,.right{max-width:none;border:0}}
+.label{font-size:11px;letter-spacing:.1em;color:#A39E94;font-weight:600;text-transform:uppercase}
+.muted{color:#A39E94}
+.small{font-size:12px}
+.card{background:#1B1B1B;border:1px solid #2A2A2A;border-radius:12px;padding:14px}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.btn{border:1px solid #3A3A3A;background:transparent;color:#ECE6DA;border-radius:8px;padding:9px 14px;min-height:40px}
+.btn.amber{background:#E8A33D;color:#1A1205;border-color:#E8A33D;font-weight:600}
+.btn.teal{background:#16201F;color:#6FC7B8;border-color:#2F5F58;font-weight:600}
+.btn.tealfill{background:#6FC7B8;color:#0E1A18;border-color:#6FC7B8;font-weight:600}
+.link{background:none;border:0;padding:6px 0;color:#E8A33D;text-align:left}
+.link.teal{color:#6FC7B8}.link.grey{color:#A39E94}
+.seg{display:flex;flex-wrap:wrap;gap:4px;background:#1B1B1B;border:1px solid #2A2A2A;border-radius:10px;padding:4px}
+.seg button{border:0;background:transparent;color:#ECE6DA;border-radius:7px;padding:8px 12px;min-height:38px}
+.seg button.on{background:#E8A33D;color:#1A1205;font-weight:600}
+.opt{text-align:left;width:100%;background:#131313;border:1px solid #3A3A3A;border-radius:10px;padding:10px 12px;color:#ECE6DA}
+.opt.on{border-color:#E8A33D;background:#211A10}
+.opt b{display:block}
+.you{align-self:flex-end;background:#262626;border-radius:12px;padding:10px 12px;max-width:92%;white-space:pre-wrap}
+.ed{white-space:pre-wrap;line-height:1.55}
+.chg{border:1px solid #4A3A1E;background:#211A10;border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:6px}
+.chg.ai{border-color:#2F5F58;background:#16201F}
+.tag{display:inline-block;font-size:10px;letter-spacing:.08em;font-weight:700;border-radius:4px;padding:1px 6px;margin-right:6px;vertical-align:1px}
+.tag.you{color:#E8A33D;border:1px solid #4A3A1E}.tag.ai{color:#6FC7B8;border:1px solid #2F5F58}
+.qa{border:1px solid #2F4A66;border-radius:12px;padding:14px;background:#1B1B1B;display:flex;flex-direction:column;gap:10px}
+.roll{border:1px solid #2F5F58;background:#16201F;border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:10px}
+.paper{background:#F4EFE6;color:#1A1A1A;border-radius:6px;padding:40px 48px;font:14px/1.5 'Courier Prime',Courier,monospace;white-space:pre-wrap;max-width:700px}
+.paperwrap{overflow-x:auto;max-width:100%}
+.paper.sp{white-space:normal;width:85ch;max-width:none;padding:6em 10ch 6em 15ch;box-sizing:border-box;line-height:1.5}
+.sp>div{margin-top:1.5em}
+.sp>div:first-child{margin-top:0}
+.sp .sp-scene,.sp .sp-char,.sp .sp-trans{text-transform:uppercase}
+.sp .sp-action{white-space:pre-wrap}
+.sp .sp-char{margin-left:22ch}
+.sp .sp-dial{margin-left:10ch;width:35ch}
+.sp .sp-paren{margin-left:16ch;width:26ch}
+.sp .sp-trans{text-align:right}
+.sp .sp-center{text-align:center}
+.sp .tight{margin-top:0}
+.frame{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px}
+.fld{display:flex;flex-direction:column;gap:4px}
+.stat{font-size:11px;font-weight:700;border-radius:4px;padding:2px 6px;flex:none;min-width:66px;text-align:center}
+.stat-ok{color:#6FC7B8;border:1px solid #2F5F58}.stat-early,.stat-late,.stat-weak{color:#E8A33D;border:1px solid #4A3A1E}.stat-missing{color:#F0A08A;border:1px solid #6B3A30}
+.mic{width:44px;height:44px;border-radius:22px;border:1px solid #3A3A3A;background:#1B1B1B;color:#ECE6DA;display:flex;align-items:center;justify-content:center;flex:none}
+.mic.on{background:#6B2020;border-color:#E07070;color:#fff}
+.busy{color:#6FC7B8;font-size:13px}
+.err{color:#F0A08A;font-size:13px}
+.stale{border:1px solid #4A3A1E;background:#211A10;border-radius:10px;padding:10px 12px;display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px}
+.beat{display:flex;gap:10px;padding:5px 8px;border-radius:8px}
+.beat .n{color:#A39E94;min-width:24px}
+.home{max-width:760px;margin:0 auto;padding:40px 20px;display:flex;flex-direction:column;gap:20px}
+.qopen{text-align:left;width:100%;border-radius:10px;padding:10px 12px;color:#ECE6DA;background:#1B1B1B;border:1px solid #2A2A2A}
+.qopen.on{background:#1B2633;border-color:#2F4A66}
+.li{border-bottom:1px solid #242424;padding:8px 0}
+.stepper{display:grid;grid-template-columns:repeat(auto-fit,minmax(118px,1fr));gap:6px}
+.step{text-align:left;background:#1B1B1B;border:1px solid #2A2A2A;border-radius:10px;padding:8px 10px;color:#ECE6DA;display:flex;gap:8px;align-items:flex-start;min-height:52px}
+.step.on{border-color:#E8A33D;background:#211A10}
+.dot{width:22px;height:22px;border-radius:11px;border:1px solid #4A4A4A;display:flex;align-items:center;justify-content:center;font-size:11px;flex:none;font-weight:600}
+.dot.done{background:#E8A33D;color:#1A1205;border-color:#E8A33D}
+.step .s{font-size:11px;color:#A39E94;display:block;line-height:1.3}
+.hint{color:#C8C1B4;max-width:780px;line-height:1.55}
+.hint b{color:#E8A33D;font-weight:600}
+.next{border:1px solid #3A3A3A;border-radius:12px;padding:14px 16px;display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;background:#171717;margin-top:6px}
+.prog{display:flex;flex-direction:column;gap:10px;max-width:640px;border-color:#2F5F58}
+.bar{height:8px;background:#2A2A2A;border-radius:4px;overflow:hidden}
+.fill{height:100%;background:#6FC7B8;transition:width .5s}
+ol.ps{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:4px}
+ol.ps li{color:#8F8A80;font-size:13px}
+ol.ps li.now{color:#6FC7B8;font-weight:600}
+ol.ps li.done{color:#ECE6DA}
+ol.ps li.done::before{content:"✓ ";color:#6FC7B8}
+ol.ps li.now::before{content:"● "}
+.chip{border:1px solid #3A3A3A;background:#1B1B1B;color:#ECE6DA;border-radius:16px;padding:6px 12px;font-size:12px;min-height:32px}
+.help{background:#1B1B1B;border:1px solid #2A2A2A;border-radius:10px;padding:10px 12px;font-size:13px;line-height:1.5}
+.qmark{width:28px;height:28px;border-radius:14px;border:1px solid #4A4A4A;background:#1B1B1B;color:#ECE6DA;font-size:13px;font-weight:700;padding:0}
+.guide{border:1px solid #2F4A66;background:#141C26;border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:8px}
+.guide ol{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;line-height:1.5}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+'use strict';
+const EDITOR = `You are the story editor inside "Story COP", a movie development tool, working one-on-one with a screenwriter.
+The writer is the main source of ideas. Your job: catch their ideas, work out the mechanics, connect them to material already in the story, and generate strong options or committed answers when asked.
+Craft principles:
+- Spine before structure: the protagonist's want, need and flaw, and the theme as an argument, drive everything.
+- Every beat is caused by something earlier, and the cause is visible.
+- Prefer solutions built from material already in the story (planted objects, habits, relationships, the theme) over new devices. Aim for surprising but inevitable. Never reach for a convenient gadget, coincidence that rescues, or a cliché.
+- LOCKED canon is absolute. DEAD ideas never come back in any form. OPEN questions are never silently resolved in beats or pages.
+- Respect what the audience is supposed to know and when.
+- Comedy comes from character under pressure; horror and thrillers from dread and reversal; drama from choices that cost something.
+Voice: plain, punchy English, like a sharp development executive across the table. No jargon, no field names, no filler praise. Be honest when something doesn't work.`;
+
+const LS = 'storycop.v1';
+const uid = () => Math.random().toString(36).slice(2, 9);
+let DB = (() => { try { const t = localStorage.getItem(LS); if (t) return JSON.parse(t); } catch (e) {} return { stories: {}, current: null }; })();
+function saveDB() { try { localStorage.setItem(LS, JSON.stringify(DB)); } catch (e) {} }
+const cur = () => (DB.current ? DB.stories[DB.current] : null);
+
+const UI = { view: cur() ? 'cop' : 'home', zoom: 'spine', prog: null, progText: '', showHelp: false, exportOpen: false, frameOpen: false, fDraft: null, kFrame: null, lens: '', impTitle: '', impText: '', note: '', tab: 'open', busy: '', err: '', draft: '', pTitle: '', pIdea: '', kick: null, kAns: {}, kOther: {}, activeQ: null, opts: {}, showPick: false, other: '', roll: null, steer: '', butOpen: false, pageM: 1 };
+
+// ---------- seed ----------
+const B = (arr) => arr.map(([n, t]) => ({ n, t }));
+const SEED = {
+  title: 'Last Resort', tone: 'Coen-style crime comedy', runtime: 100, frame: { genre: 'Comedy', genre2: 'Crime', blend: 60, tone: 'Darkly comic, Coen-style', rating: 'R', runtime: 100, structure: 'three-act' },
+  logline: 'Two lifelong freebie hunters drive to Canada to claim a "free" TV for touring a timeshare. The paperwork they never read makes them the legal owners of a crime ring\'s laundering empire, and now the feds think they\'re the masterminds while the ring wants its company back.',
+  spine: [{ k: 'GARY WANTS', v: 'Something for nothing, every time.' }, { k: 'GARY NEEDS', v: 'To see that his system isn\'t thrift; it\'s a way of never committing to anything.' }, { k: 'DONNA WANTS', v: 'One real vacation they actually pay for.' }, { k: 'THEME', v: 'Nothing is free; the fine print always collects.' }, { k: 'CENTRAL QUESTION', v: 'Can they get out of a deal they signed without paying the price?' }, { k: 'ENDING', v: 'They pay full price for something that matters, together.' }],
+  movements: [
+    { title: 'The Circuit', time: '0–12', summary: 'Pros at the timeshare game. Polly tips Gary off to the Canada TV.', feel: 'charmed, a little horrified', beats: B([[1, 'Cold open: they dismantle a Branson timeshare closer and walk out with blacked-out cruise vouchers.'], [2, 'The circuit\'s monthly "birthday" buffet; Polly is the warmest one there; three members brag about new free TVs.'], [3, 'Gary\'s garage of unopened prizes; Donna\'s Amalfi brochure hidden in a cookbook.'], [4, 'Polly tips Gary off: an 85-inch TV, pickup in person in Ontario. Gary sells it to Donna as "a vacation."']]) },
+    { title: 'North', time: '12–30', summary: 'A road trip run on cheapness. Kyle\'s sweaty pitch. Gary signs everything.', feel: 'dread under the laughs', beats: B([[5, 'A 3-hour detour to dodge a $6 toll; Donna\'s quiet moments of wanting more.'], [6, 'Kyle sweats through the pitch at an empty resort; Donna notices; Gary signs a towering stack; Kyle almost warns them.'], [7, 'The TV doesn\'t fit in the car. They make it fit.'], [8, 'Border agents scan the TV and wave it through. Triumph.']]) },
+    { title: 'The Fine Print', time: '30–50', summary: 'Strange mail, a raid, a voice in the TV. Gary was chosen because he\'s cheap.', feel: 'the floor dropping out', beats: B([[9, 'The TV turns itself on at 3 a.m.; the router lights go wild. Gary calls it a bonus feature.'], [10, 'Mail for "Pruitt Holdings Ltd." and 40 other companies; their card is declined during a triple-coupon run.'], [11, 'Agent Halvorsen\'s raid: they\'re directors of dozens of companies moving millions.'], [12, 'Released. Halvorsen is convinced: "Thirty years of deep cover. Timeshares. Brilliant."'], [13, 'A polite voice in the TV asks them to sign transfer documents and return "the unit."'], [14, 'MIDPOINT: Donna reads the whole stack. They own it all, and they were chosen because Gary is cheap.']]) },
+    { title: 'Squeezed', time: '50–72', summary: 'Feds versus ring. Kyle as ally. The nodes point to Polly. The marriage cracks.', feel: 'trapped', beats: B([[15, 'Halvorsen wants a wire on bosses they can\'t name; the ring wants signatures and the hub.'], [16, 'They find Kyle pitching at another resort, trapped the same way. An ally.'], [17, 'Some circuit members\' TVs are nodes, and every node belongs to someone close to Polly.'], [18, 'An old coding-club photo at Polly\'s: the kids\' faces match the ring\'s avatars.'], [19, 'LOW POINT: "You\'re not saving money, you\'re afraid to commit." They split up.']]) },
+    { title: 'Gary Pays Full Price', time: '72–92', summary: 'Polly confesses. Gary pays the circuit. A timeshare-style sting.', feel: 'the underdogs\' rally', beats: B([[20, 'Gary asks Polly for help instead of accusing her; she confesses they\'re her kids.'], [21, 'Gary rallies the circuit, and for the first time in his life he pays full price.'], [22, 'Donna returns with the clause that gives them leverage (open question).'], [23, 'Polly pitches the ring a "merger" that requires an in-person signing, and chooses a side.'], [24, 'The nodes flip; the nerds show up in person and sign without reading.']]) },
+    { title: 'Paid in Full', time: '92–100', summary: 'Cleared. A real vacation, paid in full.', feel: 'earned warmth', beats: B([[25, 'Aftermath: cleared, Kyle freed, Polly walks out with her head up.'], [26, 'FINAL IMAGE: a real vacation, paid in full. Offered a free gift for a timeshare tour, Gary says no.']]) }],
+  locked: ['Tone: Coen-style crime comedy, ~100 min', 'The timeshare paperwork made them the ring\'s legal owners', 'Gary lives for freebies; Donna has had enough and reads the fine print', 'Pressure from both the ring and the feds', 'The TV is the hub of a secret mesh network', 'The ring is a global mob of tech nerds', 'Only some circuit members are nodes', 'Kyle, the pitch rep, is a fellow victim', 'Agent Halvorsen: a loon posing as a straight arrow; stays a comic foil', 'Polly is the ring\'s recruiter; the nerds are her old coding-club kids', 'The climax runs through the circuit'],
+  open: [{ q: 'The clause: what in the paperwork gives them leverage over the ring?', job: 'Beat a ring of hackers using only paper, with no hacking skills and no luck.', affects: 'Affects beats 14, 22, 23' }, { q: 'Which of Polly\'s former students leads the ring?', job: 'Make Polly\'s choice cost her something personal.', affects: 'Affects beats 13, 20, 23' }, { q: 'The muscle: what physical threat can a nerd mob deliver?', job: 'Make the danger real without tough guys.', affects: 'Affects beats 13, 15' }, { q: 'What does Gary pay the circuit with?', job: 'Make the payment hurt and earn the final image.', affects: 'Affects beats 3, 21, 26' }],
+  dead: ['Broad road-trip comedy tone', 'The TV hides drugs and they\'re blind mules', 'Kyle is the ring\'s recruiter', 'Feds only, as a pure wrong-man story'],
+  ledger: [{ at: 'Beat 4: Polly\'s tip', aud: 'A friendly favor', them: 'A friendly favor' }, { at: 'Beat 6: Kyle\'s pitch', aud: 'Something is off', them: 'Only Donna notices' }, { at: 'Beat 14: midpoint', aud: 'They were chosen for being cheap', them: 'The same, together' }, { at: 'Beat 18: the photo', aud: 'Polly is the recruiter', them: 'They know, and haven\'t confronted her' }]
+};
+function makeStory(j, fallbackTitle, intro) {
+  const st = { id: uid(), title: j.title || fallbackTitle || 'Untitled', logline: j.logline || '', tone: j.tone || '', runtime: Number(j.runtime) || 100, spine: j.spine || [], movements: j.movements || [],
+    locked: [...(j.locked || []).map((t) => ({ id: uid(), text: t, by: 'you' })), ...(j.rolled || []).map((t) => ({ id: uid(), text: t, by: 'ai' }))],
+    open: (j.open || []).map((o) => ({ id: uid(), q: o.q, job: o.job || '', affects: o.affects || '' })), dead: j.dead || [], ledger: j.ledger || [],
+    scenes: [], pages: {}, chat: intro ? [{ who: 'editor', text: intro }] : [], stale: false, version: 1, history: [], reviewed: j.reviewed || {}, seenGuide: false, frame: j.frame ? normFrame(j.frame) : null };
+  DB.stories[st.id] = st; DB.current = st.id; saveDB(); return st;
+}
+
+// ---------- versioning ----------
+function mutate(label, fn) {
+  const st = cur(); if (!st) return;
+  const copy = JSON.parse(JSON.stringify(st)); delete copy.history;
+  st.history = st.history || []; st.history.push({ label, data: copy }); if (st.history.length > 30) st.history.shift();
+  fn(st); st.version = (st.version || 1) + 1; saveDB(); render();
+}
+function undo() {
+  const st = cur(); if (!st || !st.history || !st.history.length) return;
+  const last = st.history.pop(); const restored = { ...last.data, history: st.history, version: (st.version || 1) + 1 };
+  restored.chat = (restored.chat || []).concat([{ who: 'system', text: 'Undid: ' + last.label }]);
+  DB.stories[st.id] = restored; saveDB(); UI.roll = null; render();
+}
+
+// ---------- Claude ----------
+const use = (n) => { try { return window.claude && window.claude.use ? window.claude.use(n) : Promise.resolve(null); } catch (e) { return Promise.resolve(null); } };
+let sampleP = null, dict = null, dictState = 'idle', dictTarget = null, dictBase = '';
+use('dictation').then((d) => {
+  dict = d; if (!d) return;
+  const put = (t) => { if (!dictTarget) return; dictTarget.value = t; dictTarget.dispatchEvent(new Event('input')); };
+  d.onPartial(({ text }) => put(dictBase + (dictBase && text ? ' ' : '') + text));
+  d.onFinal(({ text }) => { dictBase = dictBase + (dictBase && text ? ' ' : '') + text; put(dictBase); });
+  d.onState(({ state }) => { dictState = state; document.querySelectorAll('.mic').forEach((b) => { b.classList.toggle('on', state === 'listening'); b.setAttribute('aria-label', state === 'listening' ? 'Stop dictation' : 'Dictate'); }); });
+  render();
+}).catch(() => {});
+
+function compact(st) {
+  return { title: st.title, storyFrame: st.frame ? frameText(st.frame) : undefined, logline: st.logline, tone: st.tone, runtimeMinutes: st.runtime, spine: st.spine,
+    movements: st.movements.map((m, i) => ({ movement: i + 1, title: m.title, time: m.time, summary: m.summary, feel: m.feel, beats: m.beats })),
+    LOCKED: st.locked.map((l) => l.text + (l.by === 'ai' ? ' [rolled by AI, kept by writer]' : '')),
+    OPEN: st.open.map((o) => ({ id: o.id, question: o.q, mustAccomplish: o.job })), DEAD: st.dead, audienceLedger: st.ledger,
+    recentConversation: (st.chat || []).filter((m) => m.who !== 'system').slice(-8).map((m) => ({ who: m.who, text: m.text })) };
+}
+function parseJ(t) {
+  const x = String(t || '').replace(/```(?:json)?/gi, ''); const a = x.indexOf('{'), b = x.lastIndexOf('}');
+  if (a < 0 || b < a) throw { message: 'The editor answered in a form I couldn\'t read. Try again.' };
+  try { return JSON.parse(x.slice(a, b + 1)); } catch (e) { throw { message: 'The editor answered in a form I couldn\'t read. Try again.' }; }
+}
+async function ask(task, schema, tier, raw) {
+  if (!sampleP) sampleP = use('sample');
+  const s = await sampleP; if (!s) throw { code: 'unavailable' };
+  const st = cur();
+  const prompt = EDITOR + (st ? '\n\nSTORY STATE (JSON):\n' + JSON.stringify(compact(st)) : '') + '\n\nTASK:\n' + task +
+    (raw ? '' : '\n\nReturn ONLY one JSON object, with no code fences and no commentary, in this shape:\n' + schema);
+  const r = await s(prompt, { modelTier: tier || 'default', cache: false, onText: ({ text }) => { UI.progText = text || ''; updateProg(); } });
+  return raw ? String(r.text || '') : parseJ(r.text);
+}
+let progTimer = null;
+async function run(label, fn, prog) {
+  if (UI.busy) return; UI.busy = label; UI.err = ''; UI.prog = { ...(prog || { minor: true }), start: Date.now() }; UI.progText = ''; render();
+  progTimer = setInterval(updateProg, 1000);
+  try { await fn(); } catch (e) {
+    UI.err = e && e.code === 'not_granted' ? 'Claude access wasn\'t granted for this page.' : e && e.code === 'rate_limited' ? 'Rate limited. Give it a minute, then try again.' : e && e.code === 'unavailable' ? 'Claude isn\'t available in this view. Open this page inside Claude to use the AI.' : (e && e.message) || 'Something went wrong. Try again.';
+  }
+  clearInterval(progTimer); UI.busy = ''; UI.prog = null; render();
+}
+// Progress: real signals from the streamed answer (sections appearing, scenes counted).
+const PROG = {
+  kick: { steps: [['Reading your pitch', ''], ['Finding what drives the movie', '"read"'], ['Sketching the story frame', '"frame"'], ['Writing your questions', '"questions"']], est: 30 },
+  build: { steps: [['Reading your answers', ''], ['Writing the spine', '"spine"'], ['Laying out the movements', '"movements"'], ['Writing the beats', '"beats"'], ['Finding open questions', '"open"'], ['Mapping what the audience knows', '"ledger"']], est: 90 },
+  imp: { steps: [['Reading the script', ''], ['Finding the spine', '"spine"'], ['Mapping the movements', '"movements"'], ['Tracing the beats', '"beats"'], ['Finding the biggest problems', '"open"'], ['Writing the diagnosis', '"diagnosis"'], ['Splitting the pages by movement', '"movementStarts"']], est: 150 },
+  zoom: { steps: [['Reading every decision', ''], ['Updating the spine', '"spine"'], ['Reworking the movements', '"movements"'], ['Rewriting the beats', '"beats"'], ['Updating the audience ledger', '"ledger"'], ['Summing up what changed', '"changed"']], est: 90 }
+};
+function progState() {
+  const P = UI.prog; if (!P) return null;
+  const t = UI.progText && UI.progText !== 'Thinking...' ? UI.progText : ''; const el = Math.round((Date.now() - P.start) / 1000);
+  const est = P.est ? ' · usually about ' + (P.est >= 60 ? Math.round(P.est / 60) + ' min' : P.est + ' s') : '';
+  if (P.minor) return { el, pct: 0, stage: 0, meta: el + ' s' };
+  if (P.steps) {
+    let stage = 0; if (t) P.steps.forEach((s, i) => { if (s[1] && t.includes(s[1])) stage = i; });
+    const pct = t ? (stage + 0.6) / P.steps.length : Math.min(0.1, el / 150);
+    return { el, stage, pct: Math.min(0.97, pct), meta: el + ' s elapsed' + est };
+  }
+  const c = t ? (t.match(P.re) || []).length : 0;
+  return { el, stage: c, pct: Math.min(0.97, t ? Math.max(0.05, c / P.total) : Math.min(0.06, el / 150)), meta: (t ? P.unit + ' ' + Math.min(c, P.total) + ' of ~' + P.total : 'Thinking it through') + ' · ' + el + ' s' + est };
+}
+function updateProg() {
+  const s = progState(); if (!s) return;
+  const f = document.getElementById('pfill'); if (f) f.style.width = Math.round(s.pct * 100) + '%';
+  const m = document.getElementById('pmeta'); if (m) m.textContent = s.meta;
+  const b = document.getElementById('busyt'); if (b) b.textContent = UI.busy + ' ' + s.el + ' s';
+  if (UI.prog.steps) UI.prog.steps.forEach((x, i) => { const li = document.getElementById('ps' + i); if (li) li.className = i < s.stage ? 'done' : i === s.stage ? 'now' : ''; });
+}
+function progCard() {
+  const P = UI.prog; const s = progState();
+  return h('div', { class: 'card prog', role: 'status', 'aria-live': 'polite' },
+    h('div', { class: 'label', style: 'color:#6FC7B8' }, 'Working on it'),
+    h('div', { style: 'font-weight:600;font-size:16px' }, UI.busy),
+    h('div', { class: 'bar' }, h('div', { class: 'fill', id: 'pfill', style: 'width:' + Math.round(s.pct * 100) + '%' })),
+    P.steps ? h('ol', { class: 'ps' }, P.steps.map((x, i) => h('li', { id: 'ps' + i, class: i < s.stage ? 'done' : i === s.stage ? 'now' : '' }, x[0]))) : null,
+    h('div', { class: 'small muted', id: 'pmeta' }, s.meta));
+}
+const major = () => UI.prog && !UI.prog.minor;
+
+// ---------- tasks ----------
+const SCH = {
+  kick: '{"read":"1-2 sentences","frame":{"genre":"","genre2":"","blend":70,"tone":"","rating":"PG-13","runtime":100,"structure":"three-act"},"questions":[{"id":"k1","q":"question","options":[{"label":"short","note":"one line: what this choice makes the movie"}]}]}',
+  story: '{"title":"","logline":"","tone":"","runtime":100,"spine":[{"k":"HERO WANTS","v":""}],"movements":[{"title":"","time":"0–12","summary":"","feel":"","beats":[{"n":1,"t":""}]}],"locked":[""],"rolled":[""],"open":[{"q":"","job":"","affects":"Affects beats 3, 9"}],"ledger":[{"at":"Beat 4: ...","aud":"","them":""}],"proposed":""}',
+  chat: '{"reply":"","changes":[{"kind":"lock|open|kill|resolve","text":"","resolves":"OPEN id or empty"}],"affects":""}',
+  opts: '{"job":"","options":[{"label":"","text":"","gain":"","cost":""}],"pick":{"index":0,"why":""}}',
+  roll: '{"fills":[{"id":"OPEN id","text":""}],"connection":""}',
+  refresh: '{"logline":"","tone":"","runtime":100,"spine":[{"k":"","v":""}],"movements":[{"title":"","time":"","summary":"","feel":"","beats":[{"n":1,"t":""}]}],"ledger":[{"at":"","aud":"","them":""}],"changed":[""]}',
+  imp: '{"title":"","logline":"","tone":"","runtime":100,"spine":[{"k":"","v":""}],"movements":[{"title":"","time":"","summary":"","feel":"","beats":[{"n":1,"t":""}]}],"locked":[""],"open":[{"q":"","job":"","affects":""}],"ledger":[{"at":"","aud":"","them":""}],"frame":{"genre":"","genre2":"","blend":70,"tone":"","rating":"R","runtime":110,"structure":"three-act"},"diagnosis":"","movementStarts":["INT. EXACT SLUGLINE - DAY"]}',
+  struct: '{"items":[{"beat":"Catalyst","n":4,"status":"ok|early|late|weak|missing","note":""}],"summary":""}',
+  scenes: '{"scenes":[{"n":1,"m":1,"slug":"INT. LOCATION - DAY","does":""}]}'
+};
+const STORY_RULES = `- "logline": 1-2 sentences. "tone": a few words. "runtime": minutes.
+- "spine": 6-8 items, labels in caps (e.g. HERO WANTS, HERO NEEDS, FLAW, THEME, CENTRAL QUESTION, ENDING), values 1-2 sentences, using character names (placeholder names are fine).
+- "movements": 5-7 blocks covering the runtime, each with "time" in minutes like "0–12", a 1-2 sentence "summary", what the audience "feel"s, and "beats" (24-32 beats total, numbered across the whole film, one sentence each with the cause visible). Prefix the midpoint beat with "MIDPOINT:", the low point with "LOW POINT:", the last with "FINAL IMAGE:".
+- "ledger": 3-5 key moments of what the audience knows vs. what the protagonists know.`;
+
+function startKick() {
+  const title = UI.pTitle.trim(), idea = UI.pIdea.trim(); if (!idea && !title) return;
+  DB.current = null; saveDB();
+  run('Reading your pitch…', async () => {
+    const j = await ask(`The writer is pitching a new movie.\nTITLE: ${title || '(none)'}\nIDEA: ${idea || '(title only)'}\n\n1) "read": 1-2 plain sentences naming what drives this movie (its engine), as you see it.\n2) "questions": exactly 4 questions whose answers would most reshape THIS movie (not a generic survey). Each has 3 options that are different in kind, each with a one-line note. Do not mark any option as recommended. Don't ask about genre, tone, rating, runtime or structure; those go in the frame.\n3) "frame": your best guess from the pitch at the main genre, an optional second genre with "blend" = the main genre's share (50-90), tone, rating (G, PG, PG-13, R, NC-17, Unrated), runtime in minutes, and a structure lens (one of: three-act, save-the-cat, heros-journey, five-act, story-circle, sequences).`, SCH.kick, 'default');
+    UI.kFrame = normFrame(j.frame);
+    UI.kick = { title, idea, read: j.read || '', questions: (j.questions || []).slice(0, 4) }; UI.kAns = {}; UI.kOther = {}; UI.view = 'kick';
+  }, PROG.kick);
+}
+function buildFromKick() {
+  const k = UI.kick;
+  const answers = k.questions.map((q) => { const a = (UI.kOther[q.id] || '').trim() || UI.kAns[q.id]; return `Q: ${q.q}\nA: ${a ? a : 'SKIPPED. The writer is rolling the dice: decide this yourself and list your choice in "rolled".'}`; }).join('\n\n');
+  run('Building the spine, movements and beats…', async () => {
+    const j = await ask(`The writer pitched:\nTITLE: ${k.title || '(none)'}\nIDEA: ${k.idea}\n\nYour read: ${k.read}\n\nTheir answers to your opening questions:\n${answers}\n\nSTORY FRAME (set by the writer; follow it): ${frameText(UI.kFrame || normFrame({}))}. The runtime governs the movement timings. Use the structure lens only as a light guide: cause and effect come first.\n\nBuild the first development pass. Spine first: decide the protagonist's want, need and flaw and the theme as an argument, then build the structure from them.\n${STORY_RULES}\n- "locked": the writer's decisions so far (from the idea and their answers) as short statements.\n- "rolled": your decisions for any SKIPPED questions.\n- "open": 3-5 genuine open questions the story still needs answered, each with what the answer must accomplish and which beats it affects. Reference them as open in the beats; don't answer them.\n- "proposed": one bold connection or turn you'd suggest, built from the story's own material (or empty).`, SCH.story, 'complex');
+    const intro = 'Your first pass is drafted: spine, movements and beats, plus the questions the story still needs answered.\n\nStart with step 1, the Spine, in the middle. Read it, and when it feels right press "Yes, on to Movements". If something is off, tell me here.' + (j.proposed ? '\n\nOne connection I\'d suggest (not locked yet): ' + j.proposed : '');
+    const nst = makeStory(j, k.title, intro); nst.frame = normFrame(UI.kFrame || {}, nst); nst.runtime = nst.frame.runtime; saveDB(); UI.view = 'cop'; UI.zoom = 'spine'; UI.tab = 'open'; UI.opts = {}; UI.activeQ = null;
+  }, PROG.build);
+}
+function send() {
+  const text = UI.draft.trim(); const st = cur(); if (!text || !st || UI.busy) return;
+  if (dict && dictState === 'listening') dict.stop().catch(() => {});
+  st.chat.push({ who: 'you', text }); UI.draft = ''; dictBase = ''; saveDB();
+  run('Thinking…', async () => {
+    const j = await ask(`The writer's latest message is the last item in recentConversation. Respond as their story editor.\n- "reply": at most 3 short paragraphs. Catch the idea, work out its mechanics, say what it changes or breaks, and look for a link to material already in the story. If they ask a question, answer it. If they say "zoom out", tell them to press Zoom out. End with at most one question.\n- "changes": only decisions the WRITER made or clearly endorsed in this message, as proposed canon updates. kind "lock" = a new fact/decision; "resolve" = it answers an OPEN question (put that id in "resolves"); "open" = a new unanswered question they raised; "kill" = an idea they rejected. Never include your own suggestions. Empty list if none.\n- "affects": which movements/beats this touches, or "".`, SCH.chat, 'default');
+    st.chat.push({ who: 'editor', text: j.reply || '', affects: j.affects || '', changes: (j.changes || []).filter((c) => c && c.text).map((c) => ({ ...c, cid: uid(), state: 'pending' })) }); saveDB();
+  });
+}
+function applyChange(c) {
+  mutate((c.kind === 'kill' ? 'Killed: ' : c.kind === 'open' ? 'New question: ' : 'Locked: ') + c.text, (st) => {
+    const live = st.chat.flatMap((m) => m.changes || []).find((x) => x.cid === c.cid); if (live) live.state = 'accepted';
+    if (c.kind === 'open') st.open.push({ id: uid(), q: c.text, job: '', affects: '' });
+    else if (c.kind === 'kill') st.dead.push(c.text);
+    else { st.locked.push({ id: uid(), text: c.text, by: 'you' }); if (c.resolves) st.open = st.open.filter((o) => o.id !== c.resolves); }
+    if (c.kind !== 'open') st.stale = true;
+  });
+}
+function dismissChange(c) { const st = cur(); const live = st.chat.flatMap((m) => m.changes || []).find((x) => x.cid === c.cid); if (live) live.state = 'dismissed'; saveDB(); render(); }
+function selectQ(id) {
+  UI.activeQ = id; UI.showPick = false; UI.other = ''; UI.roll = null; const o = cur().open.find((x) => x.id === id); if (!o) return;
+  if (UI.opts[id]) return render();
+  run('Working the problem…', async () => {
+    UI.opts[id] = await ask(`Open question (id ${o.id}): "${o.q}"${o.job ? '\nIt must: ' + o.job : ''}\nRun Problem → Options:\n- "job": one sentence on what the answer must accomplish and must not do, given the canon and audience ledger.\n- Brainstorm at least 10 approaches internally, drawing mostly on material already in the story. Return only the best 3 in "options", different in kind. Each: a short "label", "text" (1-2 sentences, fleshed out), "gain" (one line), "cost" (one line).\n- "pick": your own preference (index 0-2) and one sentence why. It stays hidden unless the writer asks.`, SCH.opts, 'complex');
+  });
+}
+const shortQ = (q) => q.replace(/\?$/, '');
+function resolveQ(id, text, by) {
+  mutate((by === 'ai' ? 'Rolled: ' : 'Resolved: ') + text, (st) => {
+    const o = st.open.find((x) => x.id === id); if (!o) return;
+    st.open = st.open.filter((x) => x.id !== id); st.locked.push({ id: uid(), text: shortQ(o.q) + ': ' + text, by }); st.stale = true;
+    st.chat.push({ who: 'system', by, text });
+  });
+  const st = cur(); UI.activeQ = null; UI.other = ''; UI.showPick = false; delete UI.opts[id]; render();
+}
+function startRoll(ids) { if (!ids.length) return; UI.roll = { ids, spins: [] }; UI.activeQ = ids.length === 1 ? ids[0] : null; UI.butOpen = false; spin(''); }
+function spin(note) {
+  const st = cur(); const R = UI.roll; const qs = st.open.filter((o) => R.ids.includes(o.id));
+  const prev = R.spins; const last = prev[prev.length - 1];
+  const list = qs.map((o) => `- id ${o.id}: ${o.q}${o.job ? ' (must: ' + o.job + ')' : ''}`).join('\n');
+  let extra = '';
+  if (note && last) extra = `\nThe writer liked parts of your last spin but wants changes.\nLAST SPIN:\n${last.fills.map((f) => '- ' + f.id + ': ' + f.text).join('\n')}\nTHEIR NOTE: "${note}"\nKeep what they liked, change what they named.`;
+  else if (prev.length) extra = `\nThe writer passed on these earlier spins. Do something genuinely different in kind:\n${prev.flatMap((p) => p.fills.map((f) => '- ' + f.text)).join('\n')}`;
+  run('Rolling the dice…', async () => {
+    const j = await ask(`The writer doesn't know, and is handing these open questions to you (roll the dice):\n${list}\nFor EACH one, commit to an answer and flesh it out in 2-3 vivid sentences. Not a menu, a decision. Build from the story's own material; surprising but inevitable; it should make the protagonist's flaw hurt.${extra}\n"connection": one sentence on how these answers connect to each other or the theme (or "").`, SCH.roll, 'complex');
+    R.spins.push({ fills: (j.fills || []).filter((f) => R.ids.includes(f.id)), connection: j.connection || '', note });
+  });
+}
+function keepRoll() {
+  const R = UI.roll; const s = R.spins[R.spins.length - 1]; if (!s) return;
+  mutate('Rolled ' + s.fills.length + ' answer(s)', (st) => {
+    s.fills.forEach((f) => { const o = st.open.find((x) => x.id === f.id); if (!o) return; st.open = st.open.filter((x) => x.id !== f.id); st.locked.push({ id: uid(), text: shortQ(o.q) + ': ' + f.text, by: 'ai' }); st.chat.push({ who: 'system', by: 'ai', text: f.text }); });
+    st.stale = true;
+  });
+  UI.roll = null; UI.activeQ = null; render();
+}
+function zoomOut() {
+  run('Zooming out: rebuilding the story with every decision…', async () => {
+    const j = await ask(`Zoom out. Regenerate the logline, tone, runtime, spine, movements (with beats) and audience ledger so they fully incorporate every LOCKED decision (including rolled ones) and the recent conversation. Keep what already works; change only what the canon requires. OPEN questions stay open: reference them as open, don't answer them. Never use DEAD ideas.\n${STORY_RULES}\n- "changed": 2-5 short bullets on what changed in this pass.`, SCH.refresh, 'complex');
+    mutate('Zoomed out', (st) => {
+      ['logline', 'tone', 'spine', 'movements', 'ledger'].forEach((k) => { if (j[k] && (!Array.isArray(j[k]) || j[k].length)) st[k] = j[k]; });
+      if (j.runtime) st.runtime = Number(j.runtime) || st.runtime; st.stale = false; if (st.scenes.length) st.scenesStale = true;
+      st.chat.push({ who: 'editor', text: 'Zoomed out. What changed:\n' + (j.changed || []).map((c) => '• ' + c).join('\n') });
+      st.reviewed = {}; if (st.structCheck) st.structCheck.stale = true;
+    });
+  }, PROG.zoom);
+}
+function buildScenes() {
+  const st = cur(); const n = Math.round(st.runtime / 1.8);
+  run('Breaking the beats into scenes…', async () => {
+    const j = await ask(`Break the beats into a scene list of about ${n} scenes for a ${st.runtime}-minute film. Each scene: "n" (running number), "m" (movement number, from 1), "slug" (INT./EXT. LOCATION - DAY/NIGHT), "does" (one short sentence: what happens and how the scene turns). Every beat is covered; open questions stay open.`, SCH.scenes, 'complex');
+    mutate('Built scene list', (s2) => { s2.scenes = j.scenes || []; s2.scenesStale = false; if (s2.reviewed) s2.reviewed.scenes = false; });
+  }, { re: /"slug"/g, total: n, unit: 'Scene', est: 90 });
+}
+function writePages(m) {
+  const st = cur(); const mv = st.movements[m - 1]; if (!mv) return;
+  const sc = st.scenes.filter((s) => Number(s.m) === m);
+  run(`Writing pages for "${mv.title}"…`, async () => {
+    let t = await ask(`Write the screenplay pages for movement ${m}, "${mv.title}" (${mv.time} min).\n${sc.length ? 'Its scenes:\n' + sc.map((s) => `${s.n}. ${s.slug}: ${s.does}`).join('\n') : 'Its beats:\n' + mv.beats.map((b) => b.n + '. ' + b.t).join('\n')}\nWrite in strict Fountain plain text, standard screenplay format: each scene heading in caps on its own line (INT./EXT. LOCATION - DAY/NIGHT) with a blank line before it; action in present tense, only what the camera sees and hears; each speaking character's name in CAPS on its own line with a blank line before it, then any parenthetical on its own line in (parentheses), then the dialogue on the line(s) directly below with NO blank line in between; transitions like CUT TO: in caps on their own line. Never put dialogue on the same line as the name. No markdown, bold, asterisks or scene numbers. Dialogue with subtext; no on-the-nose exposition. Honor LOCKED canon; keep OPEN questions unresolved. Return ONLY the Fountain text.`, '', 'complex', true);
+    t = t.replace(/^```[a-z]*\n?/i, '').replace(/```\s*$/, '');
+    mutate('Wrote pages: ' + mv.title, (s2) => { s2.pages[m] = t; });
+  }, { re: /(^|\n)\s*(INT\.|EXT\.|INT\/EXT)/g, total: sc.length || mv.beats.length || 6, unit: 'Scene', est: 120 });
+}
+
+// ---------- files: export, backup, import ----------
+let dl = null; use('downloads').then((d) => { dl = d; render(); }).catch(() => {});
+async function saveFile(filename, data) {
+  UI.err = ''; UI.note = '';
+  if (!dl) { UI.err = 'Downloads aren\'t available in this view. Open Story COP inside Claude to save files.'; render(); return; }
+  try { await dl.save({ filename, data }); UI.note = 'Saved ' + filename; }
+  catch (e) { if (e && e.code === 'declined') return; UI.err = e && e.code === 'host_unavailable' ? 'This app can\'t save files. Open Story COP in a browser or on a computer.' : 'Couldn\'t save the file' + (e && e.message ? ': ' + e.message : '.'); }
+  render();
+}
+const fileBase = (s) => (s || 'Untitled').replace(/[^\w\- ]+/g, '').trim().replace(/\s+/g, '-') || 'Untitled';
+function scriptText(st) { return st.movements.map((m, i) => (st.pages[i + 1] || '').trim()).filter(Boolean).join('\n\n'); }
+function fountainDoc(st) { return 'Title: ' + st.title + '\nCredit: Written by\nAuthor: ' + (st.author || '') + '\nDraft date: ' + new Date().toLocaleDateString() + '\n\n' + scriptText(st) + '\n'; }
+
+function parseFountain(txt) {
+  const L = String(txt).replace(/\r/g, '').split('\n'); const out = []; let i = 0;
+  const isScene = (s) => /^(\.(?!\.)|(INT|EXT|EST|INT\.?\/EXT|I\/E)[\.\s])/i.test(s);
+  const isTrans = (s) => /^[A-Z0-9 .\-']+TO:$/.test(s) || (/^>/.test(s) && !/<$/.test(s));
+  const isChar = (s) => (/^@/.test(s)) || (/^[A-Z0-9][A-Z0-9 .\-'’#&]*(\s*\(.*\))?\s*\^?$/.test(s) && /[A-Z]/.test(s) && s.length < 42);
+  const clean = (s) => s.replace(/\*{1,3}|(^|\s)_|_(\s|$)/g, '$1$2');
+  while (i < L.length) {
+    const s = L[i].trim(); if (!s) { i++; continue; }
+    const prevBlank = i === 0 || !L[i - 1].trim(); const nextBlank = !L[i + 1] || !L[i + 1].trim();
+    if (prevBlank && isScene(s)) { out.push({ t: 'scene', x: s.replace(/^\./, '').toUpperCase() }); i++; continue; }
+    if (/^>.*<$/.test(s)) { out.push({ t: 'center', x: clean(s.replace(/^>\s*|\s*<$/g, '')) }); i++; continue; }
+    if (prevBlank && nextBlank && isTrans(s)) { out.push({ t: 'trans', x: s.replace(/^>\s*/, '') }); i++; continue; }
+    if (prevBlank && !nextBlank && isChar(s)) {
+      out.push({ t: 'char', x: s.replace(/^@/, '') }); i++;
+      while (i < L.length && L[i].trim()) { const d = L[i].trim(); out.push({ t: /^\(.*\)$/.test(d) ? 'paren' : 'dial', x: clean(d) }); i++; }
+      continue;
+    }
+    const buf = []; while (i < L.length && L[i].trim()) { buf.push(clean(L[i].trim().replace(/^!/, ''))); i++; }
+    out.push({ t: 'action', x: buf.join('\n') });
+  }
+  return out;
+}
+// PDF: US Letter, Courier 12, standard screenplay margins.
+const ASCII = (s) => String(s).replace(/[‘’]/g, "'").replace(/[“”]/g, '"').replace(/—/g, '--').replace(/–/g, '-').replace(/…/g, '...').replace(/[^\x20-\x7E\n]/g, '?');
+function wrapText(s, w) {
+  const out = [];
+  for (const para of String(s).split('\n')) {
+    let line = '';
+    for (const word of para.split(/\s+/)) { if (!word) continue; if (!line) line = word; else if ((line + ' ' + word).length <= w) line += ' ' + word; else { out.push(line); line = word; } while (line.length > w) { out.push(line.slice(0, w)); line = line.slice(w); } }
+    out.push(line);
+  }
+  return out;
+}
+const LAY = { scene: { x: 108, w: 57, up: true }, action: { x: 108, w: 61 }, char: { x: 266, w: 30, up: true }, dial: { x: 180, w: 35 }, paren: { x: 223, w: 26 }, trans: { w: 20, right: true, up: true }, center: { w: 61, center: true } };
+function layoutPages(els) {
+  const pages = []; let page = [], line = 0; const MAX = 54; const np = () => { pages.push(page); page = []; line = 0; };
+  for (let k = 0; k < els.length;) {
+    const group = [els[k]]; if (els[k].t === 'char') { let j = k + 1; while (j < els.length && (els[j].t === 'dial' || els[j].t === 'paren')) group.push(els[j++]); }
+    const rows = [];
+    group.forEach((g) => { const L = LAY[g.t] || LAY.action; wrapText(ASCII(L.up ? g.x.toUpperCase() : g.x), L.w).forEach((t) => rows.push({ x: L.right ? 540 - t.length * 7.2 : L.center ? 324 - t.length * 3.6 : L.x, text: t })); });
+    if (line > 0 && line + rows.length + 1 > MAX && rows.length <= MAX) np();
+    if (line > 0) line++;
+    rows.forEach((r) => { if (line >= MAX) np(); page.push({ x: r.x, line, text: r.text }); line++; });
+    k += group.length;
+  }
+  if (page.length) pages.push(page); return pages;
+}
+function screenplayView(txt) {
+  const els = parseFountain(txt);
+  return h('div', { class: 'paperwrap' }, h('div', { class: 'paper sp' }, els.map((e) => h('div', { class: 'sp-' + e.t + (e.t === 'dial' || e.t === 'paren' ? ' tight' : '') }, e.x))));
+}
+function makePDF(st) {
+  const esc = (s) => s.replace(/\\/g, '\\\\').replace(/\(/g, '\\(').replace(/\)/g, '\\)');
+  const T = (x, y, s) => 'BT /F1 12 Tf ' + x.toFixed(1) + ' ' + y + ' Td (' + esc(s) + ') Tj ET\n';
+  const ctr = (y, s) => T(306 - s.length * 3.6, y, s);
+  const title = ASCII(st.title.toUpperCase());
+  const streams = [ctr(500, title) + ctr(464, 'Written by') + (st.author ? ctr(440, ASCII(st.author)) : '')];
+  layoutPages(parseFountain(scriptText(st))).forEach((p, pi) => { let s = pi > 0 ? T(540 - String(pi + 1).length * 7.2 - 7.2, 744, (pi + 1) + '.') : ''; p.forEach((r) => { s += T(r.x, 720 - r.line * 12, r.text); }); streams.push(s); });
+  const objs = []; objs[1] = '<< /Type /Catalog /Pages 2 0 R >>';
+  objs[2] = '<< /Type /Pages /Kids [' + streams.map((_, i) => (4 + i * 2) + ' 0 R').join(' ') + '] /Count ' + streams.length + ' >>';
+  objs[3] = '<< /Type /Font /Subtype /Type1 /BaseFont /Courier /Encoding /WinAnsiEncoding >>';
+  streams.forEach((s, i) => { objs[4 + i * 2] = '<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents ' + (5 + i * 2) + ' 0 R >>'; objs[5 + i * 2] = '<< /Length ' + s.length + ' >>\nstream\n' + s + 'endstream'; });
+  let out = '%PDF-1.4\n'; const offs = [];
+  for (let i = 1; i < objs.length; i++) { offs[i] = out.length; out += i + ' 0 obj\n' + objs[i] + '\nendobj\n'; }
+  const x = out.length; out += 'xref\n0 ' + objs.length + '\n0000000000 65535 f \n';
+  for (let i = 1; i < objs.length; i++) out += String(offs[i]).padStart(10, '0') + ' 00000 n \n';
+  out += 'trailer\n<< /Size ' + objs.length + ' /Root 1 0 R >>\nstartxref\n' + x + '\n%%EOF';
+  return new TextEncoder().encode(out);
+}
+const XE = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+function makeFDX(st) {
+  const TY = { scene: 'Scene Heading', action: 'Action', char: 'Character', dial: 'Dialogue', paren: 'Parenthetical', trans: 'Transition', center: 'Action' };
+  const ps = parseFountain(scriptText(st)).flatMap((e) => (e.t === 'action' ? e.x.split('\n') : [e.x]).map((t) => '<Paragraph Type="' + TY[e.t] + '"' + (e.t === 'center' ? ' Alignment="Center"' : '') + '><Text>' + XE(t) + '</Text></Paragraph>')).join('\n');
+  return '<?xml version="1.0" encoding="UTF-8" standalone="no" ?>\n<FinalDraft DocumentType="Script" Template="No" Version="5">\n<Content>\n' + ps + '\n</Content>\n<TitlePage>\n<Content>\n<Paragraph Alignment="Center"><Text>' + XE(st.title.toUpperCase()) + '</Text></Paragraph>\n<Paragraph Alignment="Center"><Text>Written by</Text></Paragraph>\n<Paragraph Alignment="Center"><Text>' + XE(st.author || '') + '</Text></Paragraph>\n</Content>\n</TitlePage>\n</FinalDraft>\n';
+}
+const CRCT = (() => { const t = new Uint32Array(256); for (let n = 0; n < 256; n++) { let c = n; for (let k = 0; k < 8; k++) c = c & 1 ? 0xEDB88320 ^ (c >>> 1) : c >>> 1; t[n] = c >>> 0; } return t; })();
+function crc32(b) { let c = 0xFFFFFFFF; for (let i = 0; i < b.length; i++) c = CRCT[(c ^ b[i]) & 255] ^ (c >>> 8); return (c ^ 0xFFFFFFFF) >>> 0; }
+function makeZip(files) {
+  const enc = new TextEncoder(); const parts = [], central = []; let off = 0;
+  for (const [name, data] of files) {
+    const nb = enc.encode(name), db = typeof data === 'string' ? enc.encode(data) : data, crc = crc32(db);
+    const lh = new DataView(new ArrayBuffer(30)); lh.setUint32(0, 0x04034b50, true); lh.setUint16(4, 20, true); lh.setUint16(6, 0x0800, true); lh.setUint16(12, 0x21, true); lh.setUint32(14, crc, true); lh.setUint32(18, db.length, true); lh.setUint32(22, db.length, true); lh.setUint16(26, nb.length, true);
+    parts.push(new Uint8Array(lh.buffer), nb, db);
+    const ch = new DataView(new ArrayBuffer(46)); ch.setUint32(0, 0x02014b50, true); ch.setUint16(4, 20, true); ch.setUint16(6, 20, true); ch.setUint16(8, 0x0800, true); ch.setUint16(14, 0x21, true); ch.setUint32(16, crc, true); ch.setUint32(20, db.length, true); ch.setUint32(24, db.length, true); ch.setUint16(28, nb.length, true); ch.setUint32(42, off, true);
+    central.push(new Uint8Array(ch.buffer), nb); off += 30 + nb.length + db.length;
+  }
+  const size = central.reduce((a, c) => a + c.length, 0); const end = new DataView(new ArrayBuffer(22));
+  end.setUint32(0, 0x06054b50, true); end.setUint16(8, files.length, true); end.setUint16(10, files.length, true); end.setUint32(12, size, true); end.setUint32(16, off, true);
+  return new Blob([...parts, ...central, new Uint8Array(end.buffer)]);
+}
+function makeDOCX(st) {
+  const run = (t, caps) => '<w:r><w:rPr><w:rFonts w:ascii="Courier New" w:hAnsi="Courier New" w:cs="Courier New"/><w:sz w:val="24"/></w:rPr><w:t xml:space="preserve">' + XE(caps ? t.toUpperCase() : t) + '</w:t></w:r>';
+  const P = (t, o) => { o = o || {}; return '<w:p><w:pPr>' + (o.keep ? '<w:keepNext/>' : '') + '<w:spacing w:before="' + (o.before || 0) + '" w:after="0" w:line="240" w:lineRule="auto"/><w:ind w:left="' + (o.left || 0) + '" w:right="' + (o.right || 0) + '"/>' + (o.jc ? '<w:jc w:val="' + o.jc + '"/>' : '') + '</w:pPr>' + String(t).split('\n').map((x, i) => (i ? '<w:r><w:br/></w:r>' : '') + run(x, o.caps)).join('') + '</w:p>'; };
+  const F = { scene: { caps: true, before: 240, keep: true }, action: { before: 240 }, char: { caps: true, before: 240, left: 3168, keep: true }, dial: { left: 1440, right: 2160 }, paren: { left: 2304, right: 2880, keep: true }, trans: { caps: true, before: 240, jc: 'right' }, center: { before: 240, jc: 'center' } };
+  const body = P(st.title, { caps: true, jc: 'center', before: 4320 }) + P('Written by', { jc: 'center', before: 480 }) + P(st.author || '', { jc: 'center', before: 240 }) + '<w:p><w:r><w:br w:type="page"/></w:r></w:p>' +
+    parseFountain(scriptText(st)).map((e, i) => P(e.x, { ...F[e.t], before: i === 0 ? 0 : F[e.t].before })).join('');
+  const doc = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:body>' + body + '<w:sectPr><w:pgSz w:w="12240" w:h="15840"/><w:pgMar w:top="1440" w:right="1440" w:bottom="1440" w:left="2160" w:header="720" w:footer="720" w:gutter="0"/></w:sectPr></w:body></w:document>';
+  return makeZip([
+    ['[Content_Types].xml', '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/></Types>'],
+    ['_rels/.rels', '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/></Relationships>'],
+    ['word/document.xml', doc]]);
+}
+function devPackage(st) {
+  const L = ['# ' + st.title + ': development package', '', '*Exported from Story COP on ' + new Date().toLocaleDateString() + ' (version ' + (st.version || 1) + ').*', '',
+    '## For the reviewer', 'You are reviewing a feature film in development. Below is its current state: the spine, the structure, the writer\'s locked decisions (marked where an AI suggested it and the writer kept it), open questions, what the audience knows when, rejected ideas, and any written pages.', '',
+    'Give an honest, specific development critique:', '1. Does the spine (want, need, flaw, theme) actually drive the structure?', '2. Where does cause and effect break, or where do events feel invented as they go?', '3. Pacing: where does it sag? Are the midpoint and low point strong enough?', '4. Characters: who is thin, inconsistent, or missing a turn?', '5. Open questions: which matter most, and what would you do?', '6. If pages exist: dialogue, subtext, and whether the scenes play.', 'Name exact beats or scenes. Skip the praise padding.', '',
+    '## Logline', st.logline, '', '**Tone:** ' + st.tone + ' · **Runtime:** about ' + st.runtime + ' minutes', '', '## Spine', ...st.spine.map((s) => '- **' + s.k + ':** ' + s.v), '', '## Movements and beats'];
+  st.movements.forEach((m, i) => L.push('', '### ' + (i + 1) + '. ' + m.title + ' (' + m.time + ' min)', m.summary, '*Audience feels: ' + m.feel + '*', '', ...(m.beats || []).map((b) => b.n + '. ' + b.t)));
+  L.push('', '## Locked decisions', ...st.locked.map((l) => '- ' + l.text + (l.by === 'ai' ? ' *(AI suggestion, kept by the writer)*' : '')), '', '## Open questions', ...(st.open.length ? st.open.map((o) => '- ' + o.q + (o.job ? ' (it must: ' + o.job + ')' : '')) : ['- None']),
+    '', '## What the audience knows, and when', ...st.ledger.map((r) => '- **' + r.at + ':** the audience knows ' + r.aud + '; the characters know ' + r.them), '', '## Rejected ideas', ...(st.dead.length ? st.dead.map((d) => '- ' + d) : ['- None']), '');
+  if (st.scenes.length) L.push('## Scene list', ...st.scenes.map((s) => s.n + '. ' + s.slug + (s.does ? ': ' + s.does : '')), '');
+  const n = Object.keys(st.pages || {}).length, sc = scriptText(st);
+  L.push('## Screenplay pages', n ? '*' + n + ' of ' + st.movements.length + ' movements written. Fountain format.*' : '*No pages written yet.*', '');
+  if (sc) L.push('```fountain', sc, '```');
+  return L.join('\n');
+}
+async function copyText(t) {
+  try { await navigator.clipboard.writeText(t); UI.note = 'Copied. Paste it into any AI tool.'; }
+  catch (e) { UI.err = 'Copying isn\'t allowed here. Download the .md file instead.'; }
+  render();
+}
+function backup(stories, name) { saveFile(name, JSON.stringify({ app: 'storycop', v: 1, exported: new Date().toISOString(), stories }, null, 1)); }
+function restoreFile(file) {
+  file.text().then((t) => {
+    let j; try { j = JSON.parse(t); } catch (e) { UI.err = 'That file isn\'t a Story COP backup.'; render(); return; }
+    const list = j && j.stories ? Object.values(j.stories) : null; if (!list || !list.length) { UI.err = 'No stories found in that backup.'; render(); return; }
+    list.forEach((s) => { if (!s || !s.title || !Array.isArray(s.movements)) return; if (DB.stories[s.id]) { s.id = uid(); s.title += ' (restored)'; } DB.stories[s.id] = s; });
+    saveDB(); UI.note = 'Restored ' + list.length + ' stor' + (list.length === 1 ? 'y' : 'ies') + '.'; render();
+  });
+}
+function fdxToFountain(xml) {
+  const d = new DOMParser().parseFromString(xml, 'application/xml'); const out = [];
+  d.querySelectorAll('Content > Paragraph').forEach((p) => {
+    const ty = p.getAttribute('Type') || 'Action'; const t = [...p.querySelectorAll('Text')].map((x) => x.textContent).join('').trim(); if (!t) return;
+    if (ty === 'Dialogue' || ty === 'Parenthetical') out.push(t); else if (ty === 'Character' || ty === 'Scene Heading' || ty === 'Transition') out.push('', t.toUpperCase()); else out.push('', t);
+  });
+  return out.join('\n').trim();
+}
+function loadScriptFile(file) {
+  file.text().then((t) => { UI.impText = /\.fdx$/i.test(file.name) ? fdxToFountain(t) : t; if (!UI.impTitle) UI.impTitle = file.name.replace(/\.[^.]+$/, '').replace(/[-_]+/g, ' '); render(); });
+}
+function importScript() {
+  let txt = UI.impText.replace(/\r/g, '').trim(); if (!txt) return;
+  if (/^title:/i.test(txt)) { const k = txt.search(/\n\s*\n/); if (k > 0) txt = txt.slice(k).trim(); }
+  const title = UI.impTitle.trim() || 'Imported script'; const MAX = 220000; const cut = txt.length > MAX; if (cut) txt = txt.slice(0, MAX);
+  DB.current = null; saveDB();
+  run('Reading your script…', async () => {
+    const j = await ask(`The writer imported an existing screenplay or draft, titled "${title}". Reverse-engineer its development so they can keep working on it here, then give an honest diagnosis.\nSCRIPT:\n<<<\n${txt}\n>>>\n${cut ? '(The script was cut off here because of length.)\n' : ''}\nDescribe the story as the script actually has it, not as it should be.\n${STORY_RULES}\n- "locked": what the script firmly establishes (premise, characters, key events), as short statements.\n- "open": the 3-6 biggest problems or unresolved questions, phrased as questions the writer must answer, each with what the answer must accomplish and which beats it affects.\n- "frame": the script's genre (and optional second genre with the main genre's share, 50-90), tone, rating, runtime in minutes (about a minute per page), and the structure it most resembles (three-act, save-the-cat, heros-journey, five-act, story-circle, sequences).\n- "diagnosis": an honest 3-5 sentence read: what works, what doesn't, and the single biggest thing to fix.\n- "movementStarts": for each movement, the scene heading in the script where it begins, copied exactly.`, SCH.imp, 'complex');
+    const st = makeStory(j, title, 'I\'ve read ' + title + '.\n\n' + (j.diagnosis || '') + '\n\nI mapped it into the steps across the top. Spine, Movements and Beats show the story as it stands now. The Questions step holds the biggest problems I see. Your pages are under step 6, split by movement.');
+    const starts = (j.movementStarts || []).map((s) => String(s || '').trim()); const idx = []; let from = 0;
+    starts.forEach((s) => { const p = s ? txt.indexOf(s, from) : -1; idx.push(p); if (p >= 0) from = p + 1; });
+    if (idx.length === st.movements.length && idx.every((p) => p >= 0)) idx.forEach((p, k) => { st.pages[k + 1] = txt.slice(k === 0 ? 0 : p, k + 1 < idx.length ? idx[k + 1] : txt.length).trim(); });
+    else st.pages[1] = txt;
+    const re = /^(?:\.(?!\.)|(?:INT|EXT|EST|INT\.?\/EXT|I\/E)[.\s]).*$/gim; let mm;
+    while ((mm = re.exec(txt))) { let m = 1; idx.forEach((p, k) => { if (p >= 0 && mm.index >= p) m = k + 1; }); st.scenes.push({ n: st.scenes.length + 1, m, slug: mm[0].replace(/^\./, '').trim().toUpperCase(), does: '' }); }
+    st.frame = normFrame(j.frame, st); st.runtime = st.frame.runtime; st.imported = true; st.reviewed = {}; saveDB(); UI.view = 'cop'; UI.zoom = 'questions'; UI.opts = {}; UI.activeQ = null; UI.impText = ''; UI.impTitle = '';
+  }, PROG.imp);
+}
+function exportPanel(st) {
+  const n = Object.keys(st.pages || {}).filter((k) => st.pages[k]).length, total = st.movements.length, base = fileBase(st.title), has = n > 0;
+  const btn = (label, fn, cls, dis) => h('button', { type: 'button', class: 'btn ' + (cls || ''), disabled: !!dis, onclick: fn }, label);
+  return h('div', { class: 'card', style: 'display:flex;flex-direction:column;gap:14px;border-color:#4A3A1E;max-width:780px' },
+    h('div', { class: 'row', style: 'justify-content:space-between' }, h('div', { style: 'font-weight:700;font-size:16px' }, 'Export and save'), h('button', { type: 'button', class: 'link grey', onclick: () => { UI.exportOpen = false; render(); } }, 'Close')),
+    h('div', { style: 'display:flex;flex-direction:column;gap:8px' },
+      h('div', { class: 'label' }, 'The screenplay'),
+      h('div', { class: 'small muted' }, has ? (n < total ? 'Only ' + n + ' of ' + total + ' movements have pages so far. Exports include what\'s written.' : 'All ' + total + ' movements are written.') : 'No pages yet. Write pages in step 6 first.'),
+      h('label', { for: 'author', class: 'small muted' }, 'Name for the title page'),
+      h('input', { id: 'author', value: st.author || '', placeholder: 'Your name', style: 'max-width:320px', oninput: (e) => { st.author = e.target.value; saveDB(); } }),
+      h('div', { class: 'row' },
+        btn('PDF', () => saveFile(base + '.pdf', makePDF(st)), 'amber', !has),
+        btn('Word (.docx)', () => saveFile(base + '.docx', makeDOCX(st)), '', !has),
+        btn('Final Draft + Fountain (.zip)', () => saveFile(base + '-script.zip', makeZip([[base + '.fdx', makeFDX(st)], [base + '.fountain', fountainDoc(st)]])), '', !has),
+        btn('Fountain (.txt)', () => saveFile(base + '.fountain.txt', fountainDoc(st)), '', !has)),
+      h('div', { class: 'small muted' }, 'Final Draft opens the .fdx. Highland, WriterSolo and Fade In open the Fountain file. If you download the .txt version, rename it to .fountain.')),
+    h('div', { style: 'display:flex;flex-direction:column;gap:8px;border-top:1px solid #2A2A2A;padding-top:12px' },
+      h('div', { class: 'label' }, 'Package it for another AI'),
+      h('div', { class: 'small muted' }, 'One file with everything (spine, beats, canon, open questions, scenes and pages) plus instructions asking for an honest development critique. Drop it into ChatGPT, Gemini or another Claude chat.'),
+      h('div', { class: 'row' }, btn('Download the package (.md)', () => saveFile(base + '-development.md', devPackage(st))), btn('Copy it to the clipboard', () => copyText(devPackage(st))))),
+    h('div', { style: 'display:flex;flex-direction:column;gap:8px;border-top:1px solid #2A2A2A;padding-top:12px' },
+      h('div', { class: 'label' }, 'Save the project'),
+      h('div', { class: 'small muted' }, 'Your stories save automatically in this browser. Back up to keep a copy safe or move it to another computer, then restore it from the Stories screen.'),
+      h('div', { class: 'row' }, btn('Back up this story (.json)', () => backup({ [st.id]: st }, base + '-storycop.json')), btn('Everything as one package (.zip)', () => saveFile(base + '-all.zip', makeZip([...(has ? [[base + '.pdf', makePDF(st)], [base + '.fdx', makeFDX(st)], [base + '.fountain', fountainDoc(st)]] : []), [base + '-development.md', devPackage(st)], [base + '-storycop.json', JSON.stringify({ app: 'storycop', v: 1, stories: { [st.id]: st } })]]))))),
+    status());
+}
+
+// ---------- story frame + structure lens ----------
+const GENRES = ['Drama', 'Comedy', 'Thriller', 'Crime', 'Horror', 'Science Fiction', 'Fantasy', 'Action', 'Adventure', 'Romance', 'Mystery', 'Neo-Noir', 'Western', 'War', 'Heist', 'Family', 'Animation', 'Musical', 'Biopic', 'Satire'];
+const TONES = ['Darkly comic', 'Coen-style', 'Grounded and gritty', 'Propulsive popcorn', 'Elevated / literary', 'Warm and humanist', 'Melancholic', 'Operatic', 'Cold and clinical', 'Whimsical'];
+const RATINGS = ['G', 'PG', 'PG-13', 'R', 'NC-17', 'Unrated'];
+const MODELS = {
+  'three-act': { label: 'Three-act', beats: ['Setup / opening image (0-10%)', 'Inciting incident (~10-12%)', 'Lock-in / break into Act 2 (~25%)', 'Midpoint reversal (~50%)', 'Low point / all is lost (~75%)', 'Climax (~85-95%)', 'Resolution / final image (95-100%)'] },
+  'save-the-cat': { label: 'Save the Cat', beats: ['Opening Image (1%)', 'Theme Stated (5%)', 'Set-Up (1-10%)', 'Catalyst (10%)', 'Debate (10-20%)', 'Break into Two (20%)', 'B Story (22%)', 'Fun and Games (20-50%)', 'Midpoint (50%)', 'Bad Guys Close In (50-75%)', 'All Is Lost (75%)', 'Dark Night of the Soul (75-80%)', 'Break into Three (80%)', 'Finale (80-99%)', 'Final Image (99-100%)'] },
+  'heros-journey': { label: 'Hero\'s Journey', beats: ['Ordinary World', 'Call to Adventure', 'Refusal of the Call', 'Meeting the Mentor', 'Crossing the Threshold (~25%)', 'Tests, Allies, Enemies', 'Approach to the Inmost Cave', 'The Ordeal (~50-60%)', 'Reward', 'The Road Back (~75%)', 'Resurrection (climax)', 'Return with the Elixir'] },
+  'five-act': { label: 'Five-act', beats: ['Exposition (0-20%)', 'Rising action (20-40%)', 'Climax / turning point (~50%)', 'Falling action (60-80%)', 'Catastrophe or resolution (80-100%)'] },
+  'story-circle': { label: 'Story Circle', beats: ['You: a comfort zone', 'Need: they want something', 'Go: an unfamiliar situation', 'Search: they adapt', 'Find: they get what they wanted (~50%)', 'Take: they pay a heavy price', 'Return: back to the familiar', 'Change: they have changed'] },
+  'sequences': { label: 'Eight sequences', beats: ['Seq 1: status quo and inciting incident', 'Seq 2: predicament and lock-in', 'Seq 3: first obstacle', 'Seq 4: first culmination / midpoint', 'Seq 5: subplot and rising stakes', 'Seq 6: main culmination / low point', 'Seq 7: new tension and twist', 'Seq 8: resolution'] },
+  'none': { label: 'None (let the story decide)', beats: [] }
+};
+const STATLBL = { ok: 'On track', early: 'Early', late: 'Late', weak: 'Weak', missing: 'Missing' };
+function normFrame(f, st) {
+  f = f || {};
+  return { genre: f.genre || '', genre2: f.genre2 || '', blend: Math.min(90, Math.max(50, Number(f.blend) || 70)), tone: f.tone || (st && st.tone) || '',
+    rating: RATINGS.includes(f.rating) ? f.rating : 'PG-13', runtime: Math.min(200, Math.max(60, Number(f.runtime) || (st && st.runtime) || 100)), structure: MODELS[f.structure] ? f.structure : 'three-act' };
+}
+function frameText(f) {
+  if (!f) return '';
+  const g = f.genre2 ? f.genre + ' ' + f.blend + '% / ' + f.genre2 + ' ' + (100 - f.blend) + '%' : f.genre;
+  return [g, f.tone, f.rating, '~' + f.runtime + ' min', 'lens: ' + MODELS[f.structure].label].filter(Boolean).join(' · ');
+}
+const fld = (label, input, id, help) => h('div', { class: 'fld' }, h('label', { for: id, class: 'small muted' }, label), input, help ? h('div', { class: 'small muted' }, help) : null);
+function frameFields(f) {
+  const bl = () => (f.genre || 'Main genre') + ' ' + f.blend + '% / ' + f.genre2 + ' ' + (100 - f.blend) + '%';
+  const setBl = () => { const l = document.getElementById('f-bl'); if (l) l.textContent = bl(); };
+  return h('div', { class: 'frame' },
+    h('datalist', { id: 'dl-genres' }, GENRES.map((g) => h('option', { value: g }))), h('datalist', { id: 'dl-tones' }, TONES.map((g) => h('option', { value: g }))),
+    fld('Main genre', h('input', { id: 'f-g', list: 'dl-genres', value: f.genre, oninput: (e) => { f.genre = e.target.value; setBl(); } }), 'f-g'),
+    fld('Second genre (optional)', h('input', { id: 'f-g2', list: 'dl-genres', value: f.genre2, placeholder: 'None', onchange: (e) => { f.genre2 = e.target.value.trim(); render(); } }), 'f-g2'),
+    f.genre2 ? fld('Blend', h('div', null, h('input', { id: 'f-b', type: 'range', min: '50', max: '90', step: '5', value: String(f.blend), style: 'padding:0', oninput: (e) => { f.blend = Number(e.target.value); setBl(); } }), h('div', { class: 'small', id: 'f-bl' }, bl())), 'f-b') : null,
+    fld('Tone', h('input', { id: 'f-t', list: 'dl-tones', value: f.tone, oninput: (e) => { f.tone = e.target.value; } }), 'f-t'),
+    fld('Rating', h('select', { id: 'f-r', onchange: (e) => { f.rating = e.target.value; } }, RATINGS.map((r) => h('option', { value: r, selected: r === f.rating }, r))), 'f-r'),
+    fld('Runtime (minutes)', h('input', { id: 'f-rt', type: 'number', min: '60', max: '200', step: '5', value: String(f.runtime), oninput: (e) => { f.runtime = Number(e.target.value) || f.runtime; } }), 'f-rt'),
+    fld('Structure lens', h('select', { id: 'f-s', onchange: (e) => { f.structure = e.target.value; } }, Object.entries(MODELS).map(([k, m]) => h('option', { value: k, selected: k === f.structure }, m.label))), 'f-s', 'Used to check the beats, not to force them.'));
+}
+function framePanel(st) {
+  return h('div', { class: 'card', style: 'display:flex;flex-direction:column;gap:12px;border-color:#4A3A1E;max-width:820px' },
+    h('div', { class: 'row', style: 'justify-content:space-between' }, h('div', { style: 'font-weight:700;font-size:16px' }, 'Story frame'), h('button', { type: 'button', class: 'link grey', onclick: () => { UI.frameOpen = false; render(); } }, 'Close')),
+    h('div', { class: 'small muted' }, 'The basics the whole story is built inside. Changing them is a decision like any other: it\'s versioned, and Zoom out folds it into the story.'),
+    frameFields(UI.fDraft),
+    h('div', { class: 'row' }, h('button', { type: 'button', class: 'btn amber', onclick: () => {
+      const f = { ...UI.fDraft, runtime: Math.min(200, Math.max(60, Number(UI.fDraft.runtime) || 100)) };
+      mutate('Changed the story frame', (s2) => { s2.frame = f; s2.runtime = f.runtime; s2.stale = true; s2.chat.push({ who: 'system', text: 'Story frame: ' + frameText(f) + '. Zoom out to fold it into the story.' }); });
+      UI.frameOpen = false; render();
+    } }, 'Save frame'), h('button', { type: 'button', class: 'btn', onclick: () => { UI.frameOpen = false; render(); } }, 'Cancel')));
+}
+function checkStructure(model) {
+  const M = MODELS[model]; if (!M || !M.beats.length) return;
+  run('Checking the beats against ' + M.label + '…', async () => {
+    const j = await ask(`Check the beat sheet against the ${M.label} structure. Its beats, with their typical place in the runtime:\n${M.beats.map((b) => '- ' + b).join('\n')}\nFor each model beat, give the number of the story beat that serves it ("n", or null if none), and a status: "ok" (present and well placed), "early", "late", "weak" (present but doesn't do the job), or "missing". Judge timing from the movements' minute ranges. "note": one plain, specific sentence. This is a lens, not a rulebook: if the story deliberately breaks the model and it works, mark it "ok" and say why.\n"summary": 2-3 honest sentences on whether the structure holds, and the one fix that matters most.`, SCH.struct, 'complex');
+    mutate('Structure check: ' + M.label, (st) => { st.structCheck = { model, summary: j.summary || '', stale: false, items: (j.items || []).map((i) => ({ beat: i.beat || '', n: Number(i.n) || null, status: STATLBL[i.status] ? i.status : 'weak', note: i.note || '' })) }; });
+  }, { steps: [['Reading the beats', ''], ['Mapping them to ' + M.label, '"items"'], ['Summing up', '"summary"']], est: 40 });
+}
+function structPanel(st) {
+  const sel = UI.lens || (st.frame && st.frame.structure !== 'none' && st.frame.structure) || 'three-act'; const sc = st.structCheck;
+  return h('div', { class: 'card', style: 'display:flex;flex-direction:column;gap:10px;max-width:820px' },
+    h('div', { class: 'row', style: 'justify-content:space-between' }, h('div', { class: 'label', style: 'color:#E8A33D' }, 'Structure lens'),
+      h('div', { class: 'row' }, h('label', { for: 'lens', class: 'small muted' }, 'Check against'),
+        h('select', { id: 'lens', style: 'width:auto', onchange: (e) => { UI.lens = e.target.value; } }, Object.entries(MODELS).filter(([k]) => k !== 'none').map(([k, m]) => h('option', { value: k, selected: k === sel }, m.label))),
+        h('button', { type: 'button', class: 'btn', disabled: !!UI.busy, onclick: () => checkStructure(UI.lens || sel) }, sc ? 'Check again' : 'Check the beats'))),
+    sc ? [sc.stale ? h('div', { class: 'small', style: 'color:#E8A33D' }, 'The beats have changed since this check. Run it again.') : null,
+      h('div', null, h('b', null, MODELS[sc.model].label + ': '), sc.summary),
+      h('div', { style: 'display:flex;flex-direction:column;gap:6px' }, sc.items.map((it) => h('div', { class: 'row', style: 'flex-wrap:nowrap;align-items:flex-start;gap:10px' },
+        h('span', { class: 'stat stat-' + it.status }, STATLBL[it.status]),
+        h('div', { style: 'flex:1' }, h('b', { style: 'font-weight:600' }, it.beat + (it.n ? ' · beat ' + it.n : '')), it.note ? h('div', { class: 'small muted' }, it.note) : null),
+        it.status !== 'ok' ? h('button', { type: 'button', class: 'link small', onclick: () => focusComposer('Structure (' + MODELS[sc.model].label + '): "' + it.beat + '" is ' + STATLBL[it.status].toLowerCase() + '. ' + it.note + ' How should we fix it?') }, 'Fix this') : null)))]
+      : h('div', { class: 'small muted' }, 'See how your beats line up with a classic structure. It\'s a lens, not a rulebook: it flags beats that are missing, early, late or weak, and you decide what to do about them.'));
+}
+
+// ---------- DOM ----------
+function h(tag, attrs, ...kids) {
+  const el = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs || {})) {
+    if (v == null || v === false) continue;
+    if (k === 'class') el.className = v; else if (k === 'style') el.style.cssText = v;
+    else if (k.startsWith('on')) el.addEventListener(k.slice(2), v); else if (k === 'value') el.value = v; else el.setAttribute(k, v === true ? '' : v);
+  }
+  for (const c of kids.flat(9)) { if (c == null || c === false) continue; el.append(c instanceof Node ? c : document.createTextNode(String(c))); }
+  return el;
+}
+const svg = (d) => { const s = document.createElementNS('http://www.w3.org/2000/svg', 'svg'); s.setAttribute('width', '18'); s.setAttribute('height', '18'); s.setAttribute('viewBox', '0 0 24 24'); s.setAttribute('fill', 'none'); s.setAttribute('stroke', 'currentColor'); s.setAttribute('stroke-width', '2'); s.setAttribute('stroke-linecap', 'round'); s.setAttribute('stroke-linejoin', 'round'); s.setAttribute('aria-hidden', 'true'); s.innerHTML = d; return s; };
+const MIC = '<rect x="9" y="3" width="6" height="11" rx="3"></rect><path d="M5 11a7 7 0 0 0 14 0M12 18v3"></path>';
+const DICE = '<rect x="3" y="3" width="18" height="18" rx="4"></rect><circle cx="8.5" cy="8.5" r="1.2" fill="currentColor"></circle><circle cx="12" cy="12" r="1.2" fill="currentColor"></circle><circle cx="15.5" cy="15.5" r="1.2" fill="currentColor"></circle>';
+function micBtn(id) {
+  if (!dict) return null;
+  return h('button', { type: 'button', class: 'mic' + (dictState === 'listening' ? ' on' : ''), 'aria-label': dictState === 'listening' ? 'Stop dictation' : 'Dictate', onclick: () => {
+    if (dictState === 'listening') { dict.stop().catch(() => {}); return; }
+    const el = document.getElementById(id); dictTarget = el; dictBase = el ? el.value : '';
+    dict.start().catch((e) => { if (e && e.code === 'not_granted') { dict = null; render(); } });
+  } }, svg(MIC));
+}
+const status = () => [UI.busy && !major() ? h('div', { class: 'busy', role: 'status', id: 'busyt' }, UI.busy) : null, UI.err ? h('div', { class: 'err', role: 'alert' }, UI.err) : null, UI.note ? h('div', { class: 'busy', role: 'status' }, UI.note) : null];
+const focusComposer = (text) => { if (text != null) UI.draft = text; render(); setTimeout(() => { const c = document.getElementById('composer'); if (c) { c.focus(); c.setSelectionRange(c.value.length, c.value.length); } }, 0); };
+
+function render() {
+  const app = document.getElementById('app'); const keep = document.querySelector('.left') ? document.querySelector('.left').scrollTop : null;
+  app.replaceChildren(UI.view === 'cop' && cur() ? cop() : UI.view === 'kick' && UI.kick ? kick() : home());
+  const left = document.querySelector('.left'); if (left) left.scrollTop = UI.stick === false && keep != null ? keep : left.scrollHeight;
+}
+
+function home() {
+  const stories = Object.values(DB.stories);
+  return h('div', { class: 'home' },
+    h('div', null, h('div', { class: 'title', style: 'font-size:22px' }, 'Story COP'), h('div', { class: 'muted' }, 'From a one-line idea to pages, with a story editor beside you.')),
+    h('div', { class: 'card', style: 'display:flex;flex-direction:column;gap:10px' },
+      h('div', { class: 'label' }, 'New idea'),
+      h('label', { for: 'pt', class: 'small muted' }, 'Working title'),
+      h('input', { id: 'pt', value: UI.pTitle, placeholder: 'e.g. Last Resort', oninput: (e) => { UI.pTitle = e.target.value; } }),
+      h('label', { for: 'pi', class: 'small muted' }, 'The idea: as rough or as detailed as you have it'),
+      h('div', { class: 'row', style: 'align-items:flex-start;flex-wrap:nowrap' }, h('textarea', { id: 'pi', placeholder: 'Pitch it like you would across a table…', oninput: (e) => { UI.pIdea = e.target.value; } }, UI.pIdea), micBtn('pi')),
+      h('div', { class: 'muted small' }, 'Next: I\'ll ask you about four questions that shape the movie, then draft the spine, movements and beats.'),
+      h('div', { class: 'row' }, h('button', { type: 'button', class: 'btn amber', disabled: !!UI.busy, onclick: startKick }, 'Start developing'), status())),
+    major() ? progCard() : null,
+    h('div', { class: 'card', style: 'display:flex;flex-direction:column;gap:10px' },
+      h('div', { class: 'label' }, 'Bring in an existing script'),
+      h('div', { class: 'small muted' }, 'Upload a Fountain, Final Draft (.fdx) or text file, or paste the script. I\'ll read it, map its spine, movements and beats, flag the biggest problems as open questions, and split your pages so you can keep developing it here. For a PDF, copy its text and paste it in.'),
+      h('label', { for: 'impfile', class: 'small muted' }, 'Script file'),
+      h('input', { id: 'impfile', type: 'file', accept: '.fountain,.fdx,.txt,.md,.spmd', onchange: (e) => { const f = e.target.files && e.target.files[0]; if (f) loadScriptFile(f); } }),
+      h('label', { for: 'impt', class: 'small muted' }, 'Title'),
+      h('input', { id: 'impt', value: UI.impTitle, placeholder: 'Script title', oninput: (e) => { UI.impTitle = e.target.value; } }),
+      h('label', { for: 'impx', class: 'small muted' }, 'Or paste the script' + (UI.impText ? ' (' + Math.round(UI.impText.length / 1000) + 'k characters loaded)' : '')),
+      h('textarea', { id: 'impx', placeholder: 'INT. SOMEWHERE - NIGHT…', style: 'min-height:120px;font-family:Courier Prime,Courier,monospace', oninput: (e) => { UI.impText = e.target.value; } }, UI.impText),
+      h('div', { class: 'row' }, h('button', { type: 'button', class: 'btn amber', disabled: !!UI.busy, onclick: importScript }, 'Analyze and bring it in'), h('span', { class: 'small muted' }, 'A feature script takes a couple of minutes.'))),
+    h('div', { class: 'card', style: 'display:flex;flex-direction:column;gap:8px' },
+      h('div', { class: 'label' }, 'Your stories'),
+      stories.length ? stories.map((s) => h('div', { class: 'row li', style: 'justify-content:space-between' },
+        h('button', { type: 'button', class: 'link', style: 'color:#ECE6DA;font-weight:600', onclick: () => { DB.current = s.id; saveDB(); UI.view = 'cop'; UI.opts = {}; UI.activeQ = null; UI.roll = null; render(); } }, s.title),
+        h('span', { class: 'small muted' }, 'v' + (s.version || 1) + ' · ' + s.open.length + ' open'),
+        h('button', { type: 'button', class: 'link grey small', onclick: () => { if (confirmDel === s.id) { delete DB.stories[s.id]; if (DB.current === s.id) DB.current = null; saveDB(); confirmDel = null; } else confirmDel = s.id; render(); } }, confirmDel === s.id ? 'Tap again to delete' : 'Delete'))) : h('div', { class: 'muted' }, 'None yet.'),
+      h('div', { class: 'row' },
+        h('button', { type: 'button', class: 'btn', disabled: !stories.length, onclick: () => backup(DB.stories, 'Story-COP-backup-' + new Date().toISOString().slice(0, 10) + '.json') }, 'Back up all stories'),
+        h('label', { class: 'btn', style: 'display:inline-flex;align-items:center;cursor:pointer;position:relative' }, 'Restore from a backup', h('input', { type: 'file', accept: '.json', style: 'position:absolute;inset:0;opacity:0;cursor:pointer', onchange: (e) => { const f = e.target.files && e.target.files[0]; if (f) restoreFile(f); } }))),
+      status(),
+      h('div', null, h('button', { type: 'button', class: 'btn', onclick: () => { makeStory({ ...JSON.parse(JSON.stringify(SEED)), reviewed: { spine: true, movements: true, beats: true } }, 'Last Resort', 'Last Resort is loaded where we left it. The spine, movements and beats are reviewed, so you\'re on step 4: the open questions. Pick one in the middle to work on it, or roll the dice on all of them.'); UI.view = 'cop'; UI.zoom = 'questions'; UI.opts = {}; UI.activeQ = null; render(); } }, 'Load Last Resort (sample)'))));
+}
+let confirmDel = null;
+
+function kick() {
+  const k = UI.kick;
+  if (major()) return h('div', { class: 'home' }, h('div', null, h('div', { class: 'label' }, 'Pitch'), h('div', { class: 'title' }, k.title || 'Untitled')), progCard());
+  return h('div', { class: 'home' },
+    h('div', null, h('div', { class: 'label' }, 'Pitch'), h('div', { class: 'title' }, k.title || 'Untitled'), h('div', { class: 'muted' }, k.idea)),
+    h('div', { class: 'card ed' }, h('div', { class: 'label', style: 'margin-bottom:4px' }, 'My read'), k.read),
+    h('div', { class: 'card', style: 'display:flex;flex-direction:column;gap:10px' }, h('div', { class: 'label' }, 'Story frame'), h('div', { class: 'small muted' }, 'My best guess from your pitch. Change anything that\'s off.'), frameFields(UI.kFrame || (UI.kFrame = normFrame({})))),
+    h('div', { class: 'hint' }, 'Answer the questions that matter to you. Each answer reshapes the movie. When you\'re done, I\'ll draft the spine, movements and beats in one pass.'),
+    k.questions.map((q, i) => h('div', { class: 'card', style: 'display:flex;flex-direction:column;gap:8px' },
+      h('div', { style: 'font-weight:600' }, (i + 1) + '. ' + q.q),
+      (q.options || []).map((o) => h('button', { type: 'button', class: 'opt' + (UI.kAns[q.id] === o.label && !(UI.kOther[q.id] || '').trim() ? ' on' : ''), onclick: () => { UI.kAns[q.id] = UI.kAns[q.id] === o.label ? null : o.label; UI.kOther[q.id] = ''; render(); } }, h('b', null, o.label), h('span', { class: 'small muted' }, o.note))),
+      h('label', { for: 'ko' + i, class: 'small muted' }, 'Other: your own answer'),
+      h('input', { id: 'ko' + i, value: UI.kOther[q.id] || '', placeholder: 'Type your own…', oninput: (e) => { UI.kOther[q.id] = e.target.value; } }))),
+    h('div', { class: 'muted small' }, 'Skip any question and the AI rolls the dice on it. Its choice is tagged so you can revisit it.'),
+    h('div', { class: 'row' }, h('button', { type: 'button', class: 'btn amber', disabled: !!UI.busy, onclick: buildFromKick }, 'Build the story'), h('button', { type: 'button', class: 'btn', onclick: () => { UI.view = 'home'; render(); } }, 'Back'), status()));
+}
+
+function cop() {
+  const st = cur(); const openIds = st.open.map((o) => o.id);
+  return h('div', { class: 'app' },
+    h('header', null,
+      h('button', { type: 'button', class: 'link grey', onclick: () => { UI.view = 'home'; render(); } }, '‹ Stories'),
+      h('span', { class: 'title' }, st.title), h('button', { type: 'button', class: 'link small', style: 'color:#A39E94', title: 'Edit the story frame', onclick: () => { UI.frameOpen = !UI.frameOpen; UI.fDraft = normFrame(st.frame, st); render(); const c = document.querySelector('.center'); if (c) c.scrollTop = 0; } }, (st.frame ? frameText(st.frame) : 'Set the story frame') + '  ✎'),
+      h('span', { style: 'flex:1' }),
+      h('span', { class: 'muted small' }, 'v' + (st.version || 1)),
+      h('button', { type: 'button', class: 'btn', onclick: () => { st.seenGuide = false; saveDB(); render(); } }, 'How this works'),
+      h('button', { type: 'button', class: 'btn', onclick: () => { UI.exportOpen = !UI.exportOpen; UI.note = ''; UI.err = ''; render(); const c = document.querySelector('.center'); if (c) c.scrollTop = 0; } }, 'Export & save'),
+      h('button', { type: 'button', class: 'btn', disabled: !(st.history && st.history.length) || !!UI.busy, onclick: undo }, 'Undo'),
+      h('button', { type: 'button', class: 'btn' + (st.stale ? ' amber' : ''), disabled: !!UI.busy, onclick: zoomOut }, st.stale ? 'Zoom out (canon changed)' : 'Zoom out'),
+      h('button', { type: 'button', class: 'btn teal', disabled: !!UI.busy || !openIds.length, onclick: () => startRoll(openIds), style: 'display:flex;gap:8px;align-items:center' }, svg(DICE), 'Roll the dice')),
+    h('div', { class: 'body' }, editorPane(st), centerPane(st), canonPane(st)));
+}
+
+function editorPane(st) {
+  const msgs = st.chat.map((m) => {
+    if (m.who === 'you') return h('div', { class: 'you' }, m.text);
+    if (m.who === 'system') return h('div', { class: 'chg' + (m.by === 'ai' ? ' ai' : '') }, h('div', { class: 'label', style: 'color:' + (m.by === 'ai' ? '#6FC7B8' : '#E8A33D') }, m.by === 'ai' ? 'Story changed · rolled by AI, kept by you' : 'Story changed'), h('div', null, m.text));
+    return h('div', { style: 'display:flex;flex-direction:column;gap:8px' }, h('div', { class: 'label' }, 'Editor'), h('div', { class: 'ed' }, m.text),
+      m.affects ? h('div', { class: 'small muted' }, m.affects) : null,
+      (m.changes || []).map((c) => h('div', { class: 'chg' },
+        h('div', { class: 'label', style: 'color:#E8A33D' }, c.kind === 'kill' ? 'Kill this idea?' : c.kind === 'open' ? 'New open question?' : c.kind === 'resolve' ? 'Answers an open question. Lock it?' : 'Lock this?'),
+        h('div', null, c.text),
+        c.state === 'pending' ? h('div', { class: 'row' }, h('button', { type: 'button', class: 'btn amber', onclick: () => applyChange(c) }, c.kind === 'kill' ? 'Kill it' : c.kind === 'open' ? 'Add question' : 'Lock it'), h('button', { type: 'button', class: 'btn', onclick: () => dismissChange(c) }, 'Not yet')) : h('div', { class: 'small muted' }, c.state === 'accepted' ? 'Done' : 'Dismissed'))));
+  });
+  const guide = st.seenGuide ? null : h('div', { class: 'guide' },
+    h('div', { class: 'label', style: 'color:#7FB2E5' }, 'How this works'),
+    h('ol', null,
+      h('li', null, h('b', null, 'Follow the steps across the top of the middle panel: '), 'Spine → Movements → Beats → Questions → Scenes → Pages. The first three are already drafted. Read each one and press its "Yes, on to…" button when it feels right.'),
+      h('li', null, h('b', null, 'Talk to me in the box below, any time. '), 'Pitch an idea, ask a question, or give a note. When you make a decision, I\'ll offer a "Lock this?" card. Nothing changes until you accept it.'),
+      h('li', null, h('b', null, 'Don\'t know? Roll the dice '), 'and I\'ll decide for you. You can spin again, or say "I like it, but…". Undo steps back from anything.')),
+    h('div', null, h('button', { type: 'button', class: 'btn', onclick: () => { st.seenGuide = true; saveDB(); render(); } }, 'Got it')));
+  const CHIPS = { spine: ['Sharpen the hero\'s flaw', 'What is the theme really arguing?', 'Make the ending hurt more'], movements: ['Where does it sag?', 'Is the midpoint big enough?'], beats: ['Which beat feels unearned?', 'Where\'s the weakest cause-and-effect link?'], questions: ['Which question matters most?', 'Talk me through the clause idea'], scenes: ['Which scene could we cut?', 'Is the opening scene strong enough?'], pages: ['Punch up the dialogue', 'Is this too on-the-nose?'] };
+  const chips = (CHIPS[UI.zoom] || []).map((c) => h('button', { type: 'button', class: 'chip', onclick: () => focusComposer(c) }, c));
+  return h('section', { class: 'pane left', 'aria-label': 'Story editor' },
+    h('div', { class: 'label' }, 'Story editor'), msgs, guide, questionPanel(st), rollPanel(st), status(),
+    h('div', { style: 'flex:1' }),
+    h('div', { style: 'position:sticky;bottom:0;background:#131313;padding-top:10px;display:flex;flex-direction:column;gap:8px;border-top:1px solid #242424' },
+      h('div', { class: 'row', style: 'justify-content:space-between' },
+        h('label', { for: 'composer', style: 'font-weight:600;font-size:13px' }, 'Talk to your story editor'),
+        h('button', { type: 'button', class: 'qmark', 'aria-label': 'What is this box for?', 'aria-expanded': UI.showHelp ? 'true' : 'false', title: 'Pitch an idea, ask a question, or give a note. Decisions become “Lock this?” cards.', onclick: () => { UI.showHelp = !UI.showHelp; render(); } }, '?')),
+      UI.showHelp ? h('div', { class: 'help' }, 'This is a conversation with your story editor. You can ', h('b', null, 'pitch an idea'), ' (“What if Donna signs instead of Gary?”), ', h('b', null, 'ask a question'), ' (“Why does the midpoint feel weak?”), or ', h('b', null, 'give a note'), ' (“Make Polly funnier”). I\'ll work it through with you. Any decision you make shows up as a “Lock this?” card, and nothing in the story changes until you accept it. Press the mic to talk instead of typing.') : null,
+      chips.length ? h('div', { class: 'row', style: 'gap:6px' }, h('span', { class: 'small muted' }, 'Try:'), chips) : null,
+      h('div', { class: 'row', style: 'flex-wrap:nowrap' }, micBtn('composer'),
+        h('input', { id: 'composer', value: UI.draft, placeholder: 'Pitch an idea, ask a question, or give a note…', oninput: (e) => { UI.draft = e.target.value; }, onkeydown: (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); } } }),
+        h('button', { type: 'button', class: 'btn amber', disabled: !!UI.busy, onclick: send }, 'Send'))));
+}
+function questionPanel(st) {
+  const o = st.open.find((x) => x.id === UI.activeQ); if (!o || (UI.roll && UI.roll.spins.length)) return null;
+  const op = UI.opts[o.id];
+  return h('div', { class: 'qa' },
+    h('div', { class: 'row', style: 'justify-content:space-between' }, h('div', { class: 'label', style: 'color:#7FB2E5' }, 'Open question'), h('button', { type: 'button', class: 'link grey small', onclick: () => { UI.activeQ = null; render(); } }, 'Close')),
+    h('div', { style: 'font-weight:600;font-size:15px' }, o.q),
+    op ? [h('div', { class: 'small muted' }, 'Must: ' + (op.job || o.job)),
+      (op.options || []).map((x) => h('button', { type: 'button', class: 'opt', onclick: () => resolveQ(o.id, x.label + ': ' + x.text, 'you') }, h('b', null, x.label), h('span', null, x.text), h('span', { class: 'small muted', style: 'display:block;margin-top:4px' }, 'Gains: ' + x.gain + ' · Costs: ' + x.cost))),
+      h('label', { for: 'other', class: 'small muted' }, 'Other: your own idea'),
+      h('div', { class: 'row', style: 'flex-wrap:nowrap' }, h('input', { id: 'other', value: UI.other, placeholder: 'Type or dictate it…', oninput: (e) => { UI.other = e.target.value; } }), micBtn('other'), h('button', { type: 'button', class: 'btn', onclick: () => { if (UI.other.trim()) resolveQ(o.id, UI.other.trim(), 'you'); } }, 'Use mine')),
+      h('div', { class: 'row', style: 'gap:18px' },
+        h('button', { type: 'button', class: 'link', onclick: () => { UI.showPick = true; render(); } }, 'What would you do?'),
+        h('button', { type: 'button', class: 'link teal', disabled: !!UI.busy, onclick: () => startRoll([o.id]) }, 'I don\'t know. Roll the dice on this one')),
+      UI.showPick && op.pick && op.options && op.options[op.pick.index] ? h('div', { class: 'small', style: 'border-top:1px solid #2A2A2A;padding-top:8px' }, 'I\'d go with ' + op.options[op.pick.index].label + '. ' + (op.pick.why || '')) : null,
+      h('button', { type: 'button', class: 'link grey small', disabled: !!UI.busy, onclick: () => { delete UI.opts[o.id]; selectQ(o.id); } }, 'New options')]
+      : h('div', { class: 'small muted' }, UI.busy ? 'Working…' : ''));
+}
+function rollPanel(st) {
+  const R = UI.roll; if (!R || !R.spins.length) return null; const s = R.spins[R.spins.length - 1];
+  const qOf = (id) => (st.open.find((o) => o.id === id) || {}).q || '';
+  return h('div', { class: 'roll' },
+    h('div', { class: 'label', style: 'color:#6FC7B8' }, 'Roll the dice · spin ' + R.spins.length),
+    h('div', { class: 'small', style: 'color:#C9D6D3' }, (s.fills.length > 1 ? 'I filled in all ' + s.fills.length + ' open questions.' : 'I filled this one in.') + ' Nothing is locked until you keep it.'),
+    s.note ? h('div', { class: 'small', style: 'color:#6FC7B8' }, 'Steered by your note: “' + s.note + '”') : null,
+    s.fills.map((f) => h('div', { style: 'border-top:1px solid #24403C;padding-top:8px' }, h('div', { class: 'small muted' }, qOf(f.id)), h('div', null, f.text))),
+    s.connection ? h('div', { class: 'small', style: 'color:#C9D6D3;border-top:1px solid #24403C;padding-top:8px' }, 'How it connects: ' + s.connection) : null,
+    h('div', { class: 'row' },
+      h('button', { type: 'button', class: 'btn tealfill', disabled: !!UI.busy, onclick: keepRoll }, 'Keep it'),
+      h('button', { type: 'button', class: 'btn teal', disabled: !!UI.busy, onclick: () => spin('') }, 'Spin again'),
+      h('button', { type: 'button', class: 'btn', onclick: () => { UI.butOpen = !UI.butOpen; render(); } }, 'I like it, but…')),
+    UI.butOpen ? [h('label', { for: 'steer', class: 'small muted' }, 'What should the next spin keep or change?'),
+      h('div', { class: 'row', style: 'flex-wrap:nowrap' }, h('input', { id: 'steer', value: UI.steer, placeholder: 'e.g. keep the hitman, but make him Canadian', oninput: (e) => { UI.steer = e.target.value; } }), micBtn('steer'),
+        h('button', { type: 'button', class: 'btn teal', disabled: !!UI.busy, onclick: () => { const n = UI.steer.trim(); if (!n) return; UI.steer = ''; UI.butOpen = false; spin(n); } }, 'Spin with this'))] : null,
+    h('button', { type: 'button', class: 'link grey small', onclick: () => { UI.roll = null; render(); } }, 'Back to choosing myself'));
+}
+
+const STEPS = [['spine', 'Spine'], ['movements', 'Movements'], ['beats', 'Beats'], ['questions', 'Questions'], ['scenes', 'Scenes'], ['pages', 'Pages']];
+function stepInfo(st, id) {
+  const rv = st.reviewed || {};
+  if (['spine', 'movements', 'beats'].includes(id)) return rv[id] ? { done: true, s: 'Reviewed' } : { done: false, s: st.stale ? 'Draft · needs a refresh' : 'Draft ready to review' };
+  if (id === 'questions') return st.open.length ? { done: false, s: st.open.length + ' open' } : { done: true, s: 'All answered' };
+  if (id === 'scenes') return !st.scenes.length ? { done: false, s: 'Not built yet' } : st.scenesStale ? { done: false, s: 'Needs a rebuild' } : rv.scenes ? { done: true, s: st.scenes.length + ' scenes · reviewed' } : { done: false, s: st.scenes.length + ' scenes to review' };
+  const n = Object.keys(st.pages || {}).length, t = st.movements.length;
+  return { done: n >= t && t > 0, s: n ? n + ' of ' + t + ' movements written' : 'Not written yet' };
+}
+function go(id) { UI.zoom = id; render(); const c = document.querySelector('.center'); if (c) c.scrollTop = 0; }
+function approve(id, next) { mutate('Reviewed: ' + id, (st) => { st.reviewed = st.reviewed || {}; st.reviewed[id] = true; }); go(next); }
+function nextCard(st) {
+  const B2 = (label, onclick, cls) => h('button', { type: 'button', class: 'btn ' + (cls || ''), disabled: !!UI.busy, onclick }, label);
+  const card = (q, ...btns) => h('div', { class: 'next' }, h('div', { style: 'font-weight:600' }, q), h('div', { class: 'row' }, btns));
+  const z = UI.zoom, n = st.open.length;
+  if (z === 'spine') return card('Does the spine feel right?', B2('Change something', () => focusComposer('About the spine: ')), B2('Yes, on to Movements →', () => approve('spine', 'movements'), 'amber'));
+  if (z === 'movements') return card('Do the movements hold up?', B2('Change something', () => focusComposer('About the movements: ')), B2('Yes, on to Beats →', () => approve('movements', 'beats'), 'amber'));
+  if (z === 'beats') return card('Do the beats work?', B2('Change something', () => focusComposer('About the beats: ')), n ? B2('Yes, on to the open questions (' + n + ') →', () => approve('beats', 'questions'), 'amber') : B2('Yes, on to Scenes →', () => approve('beats', 'scenes'), 'amber'));
+  if (z === 'questions') {
+    if (st.stale) return card('You\'ve made decisions since the story was drafted. Fold them in before building scenes.', n ? B2('Roll the dice on the rest (' + n + ')', () => startRoll(st.open.map((o) => o.id)), 'teal') : null, B2('Zoom out: update the story', zoomOut, 'amber'));
+    if (n) return card('Answer what you can. Anything still open stays flagged in the scenes.', B2('Roll the dice on all ' + n, () => startRoll(st.open.map((o) => o.id)), 'teal'), B2('Skip to Scenes →', () => go('scenes')));
+    return card('Every question is answered.', B2('On to Scenes →', () => go('scenes'), 'amber'));
+  }
+  if (z === 'scenes') {
+    if (!st.scenes.length || st.scenesStale) return card(st.scenesStale ? 'The story changed since these scenes were built.' : 'Ready to break the beats into about ' + Math.round(st.runtime / 1.8) + ' scenes?', B2(st.scenesStale ? 'Rebuild the scene list' : 'Build the scene list', buildScenes, 'amber'));
+    return card('Do the scenes work?', B2('Rebuild', buildScenes), B2('Yes, on to Pages →', () => approve('scenes', 'pages'), 'amber'));
+  }
+  const m = UI.pageM, t = st.movements.length;
+  if (!st.pages[m]) return card('Write the pages for movement ' + m + ', "' + ((st.movements[m - 1] || {}).title || '') + '"?', B2('Write pages', () => writePages(m), 'amber'));
+  if (m < t) return card('Movement ' + m + ' is written.', B2('Rewrite', () => writePages(m)), B2('Next: movement ' + (m + 1) + ' →', () => { UI.pageM = m + 1; go('pages'); }, 'amber'));
+  return card('That\'s the whole draft. Export it, package it for another AI, or keep giving notes.', B2('Rewrite this movement', () => writePages(m)), B2('Export & save →', () => { UI.exportOpen = true; render(); const c = document.querySelector('.center'); if (c) c.scrollTop = 0; }, 'amber'));
+}
+const HINT = {
+  spine: ['Step 1 of 6 · Spine. ', 'The core of your movie: what your hero wants, what they really need, and what the story is arguing. Everything else is built from this, so get it right first.'],
+  movements: ['Step 2 of 6 · Movements. ', 'The movie in big blocks, with run times and what the audience should feel in each one.'],
+  beats: ['Step 3 of 6 · Beats. ', 'Every story event, in order. Each one should be caused by something that came before it.'],
+  questions: ['Step 4 of 6 · Open questions. ', 'Decisions the story still needs. Pick one to work on: choose an option, write your own, or roll the dice and let me decide. When you\'ve answered some, zoom out to fold them into the story.'],
+  scenes: ['Step 5 of 6 · Scenes. ', 'The beats broken into actual scenes, with a location and what happens in each, sized to your run time.'],
+  pages: ['Step 6 of 6 · Pages. ', 'Screenplay pages, written one movement at a time from the scenes.']
+};
+function centerPane(st) {
+  const stepper = h('nav', { 'aria-label': 'Development steps' }, h('div', { class: 'stepper' }, STEPS.map(([id, l], i) => { const inf = stepInfo(st, id);
+    return h('button', { type: 'button', class: 'step' + (UI.zoom === id ? ' on' : ''), 'aria-current': UI.zoom === id ? 'step' : null, onclick: () => go(id) },
+      h('span', { class: 'dot' + (inf.done ? ' done' : '') }, inf.done ? '✓' : String(i + 1)), h('span', null, h('span', { style: 'font-weight:600;display:block' }, l), h('span', { class: 's' }, inf.s))); })));
+  const staleBar = st.stale && ['spine', 'movements', 'beats'].includes(UI.zoom) ? h('div', { class: 'stale' }, h('span', null, 'You\'ve made decisions since this was drafted, so it may be out of date.'), h('button', { type: 'button', class: 'btn amber', disabled: !!UI.busy, onclick: zoomOut }, 'Zoom out to update')) : null;
+  let body;
+  if (UI.zoom === 'spine') body = [h('div', { class: 'card' }, h('div', { class: 'label', style: 'color:#E8A33D' }, 'Logline'), h('div', { style: 'font-size:18px;line-height:1.5' }, st.logline)), h('div', { class: 'grid' }, st.spine.map((s) => h('div', { class: 'card' }, h('div', { class: 'label', style: 'color:#E8A33D' }, s.k), h('div', null, s.v))))];
+  else if (UI.zoom === 'movements') body = h('div', { class: 'grid' }, st.movements.map((m, i) => h('div', { class: 'card', style: 'display:flex;flex-direction:column;gap:6px' }, h('div', { class: 'row', style: 'justify-content:space-between' }, h('b', null, (i + 1) + '. ' + m.title), h('span', { class: 'small muted' }, m.time + ' min')), h('div', null, m.summary), h('div', { class: 'small muted' }, 'Audience feels: ' + m.feel))));
+  else if (UI.zoom === 'beats') { const tags = {}; (st.structCheck && !st.structCheck.stale ? st.structCheck.items : []).forEach((it) => { if (it.n) (tags[it.n] = tags[it.n] || []).push(it); });
+    body = [structPanel(st), st.movements.map((m, i) => h('div', null, h('div', { style: 'font-weight:600;margin:6px 0' }, (i + 1) + '. ' + m.title + ' ', h('span', { class: 'small muted' }, m.time + ' min')), (m.beats || []).map((b) => h('div', { class: 'beat' }, h('span', { class: 'n' }, b.n), h('span', null, b.t, (tags[b.n] || []).map((it) => h('span', { class: 'stat stat-' + it.status, style: 'margin-left:8px;display:inline-block' }, it.beat)))))))]; }
+  else if (UI.zoom === 'questions') body = st.open.length ? h('div', { style: 'display:flex;flex-direction:column;gap:8px;max-width:780px' }, st.open.map((o) => h('div', { class: 'card', style: 'display:flex;flex-direction:column;gap:6px' + (UI.activeQ === o.id ? ';border-color:#2F4A66' : '') },
+      h('b', null, o.q), o.job ? h('div', { class: 'small muted' }, 'It must: ' + o.job) : null, o.affects ? h('div', { class: 'small muted' }, o.affects) : null,
+      h('div', { class: 'row' }, h('button', { type: 'button', class: 'btn' + (UI.activeQ === o.id ? ' amber' : ''), disabled: !!UI.busy, onclick: () => selectQ(o.id) }, UI.activeQ === o.id ? 'Open in the editor ←' : 'Work on this'), h('button', { type: 'button', class: 'link teal', disabled: !!UI.busy, onclick: () => startRoll([o.id]) }, 'Roll the dice on it')))),
+      h('div', { class: 'small muted' }, 'Options open in the editor on the left.'))
+    : h('div', { class: 'muted' }, 'No open questions right now.');
+  else if (UI.zoom === 'scenes') body = st.scenes.length ? st.movements.map((m, i) => h('div', null, h('div', { style: 'font-weight:600;margin:8px 0 4px' }, (i + 1) + '. ' + m.title), st.scenes.filter((s) => Number(s.m) === i + 1).map((s) => h('div', { class: 'beat' }, h('span', { class: 'n' }, s.n), h('span', null, h('b', { style: 'font-weight:600' }, s.slug), s.does ? ' · ' + s.does : '')))))
+    : null;
+  else body = [h('div', { class: 'row' }, h('span', { class: 'small muted' }, 'Movement:'), st.movements.map((m, i) => h('button', { type: 'button', class: 'btn' + (UI.pageM === i + 1 ? ' amber' : ''), onclick: () => { UI.pageM = i + 1; render(); } }, (i + 1) + '. ' + m.title + (st.pages[i + 1] ? ' ✓' : '')))),
+    st.pages[UI.pageM] ? screenplayView(st.pages[UI.pageM]) : (st.scenes.length ? null : h('div', { class: 'small muted' }, 'Tip: build the scene list (step 5) first for tighter pages. You can also write straight from the beats.'))];
+  const hint = HINT[UI.zoom];
+  return h('main', { class: 'pane center' }, UI.exportOpen ? exportPanel(st) : null, UI.frameOpen ? framePanel(st) : null, stepper,
+    major() ? progCard() : null,
+    h('div', { class: 'hint' }, h('b', null, hint[0]), hint[1]),
+    staleBar, body, major() ? null : nextCard(st));
+}
+
+function canonPane(st) {
+  const T = [['locked', 'Locked (' + st.locked.length + ')'], ['open', 'Open (' + st.open.length + ')'], ['audience', 'Audience'], ['dead', 'Dead']];
+  let body;
+  if (UI.tab === 'locked') body = st.locked.map((l) => h('div', { class: 'li' }, h('span', { class: 'tag ' + l.by }, l.by === 'ai' ? 'ROLLED' : 'YOU'), l.text));
+  else if (UI.tab === 'open') body = st.open.length ? st.open.map((o) => h('button', { type: 'button', class: 'qopen' + (UI.activeQ === o.id ? ' on' : ''), disabled: !!UI.busy, onclick: () => selectQ(o.id) }, h('div', { style: 'font-weight:600' }, o.q), o.affects ? h('div', { class: 'small muted' }, o.affects) : null)) : h('div', { class: 'muted' }, 'No open questions. Zoom out, build scenes, or riff on something new.');
+  else if (UI.tab === 'audience') body = [h('div', { class: 'small muted' }, 'Who knows what, and when.'), st.ledger.map((r) => h('div', { class: 'card', style: 'padding:10px 12px' }, h('b', { class: 'small' }, r.at), h('div', { class: 'small' }, h('span', { style: 'color:#E8A33D' }, 'Audience: '), r.aud), h('div', { class: 'small' }, h('span', { style: 'color:#7FB2E5' }, 'Characters: '), r.them)))];
+  else body = st.dead.length ? st.dead.map((d) => h('div', { class: 'li muted', style: 'text-decoration:line-through' }, d)) : h('div', { class: 'muted' }, 'Nothing killed yet.');
+  return h('aside', { class: 'pane right', 'aria-label': 'Canon' }, h('div', { class: 'label' }, 'Canon'),
+    h('div', { class: 'seg', role: 'group', 'aria-label': 'Canon section' }, T.map(([id, l]) => h('button', { type: 'button', class: UI.tab === id ? 'on' : '', 'aria-pressed': UI.tab === id ? 'true' : 'false', onclick: () => { UI.tab = id; render(); } }, l))), body);
+}
+
+render();
+</script>
+</body>
+</html>
